@@ -1,0 +1,49 @@
+.mdl-button{
+    margin: 0 10px;
+}
+.mdl-layout__header{
+    background-color: #f9f9f9;
+}
+.mdl-layout__drawer{
+    background-color: #ecebeb;
+    padding-top: 30px;
+}
+
+.mdl-layout__drawer #skapa{
+    margin-left: 30px;
+    width: 112px;
+}
+
+.mdl-layout__header-row{
+    padding: 0 5px 0 30px;
+}
+
+div.vertical-separator{
+    display: block;
+    width: 1px;
+    align-items: flex-start;
+    height: 100%;
+    border-left: solid #e4e4e4 1px;
+}
+
+div.header-separator{
+    display: block;
+    width: 100px;
+    align-items: flex-start;
+    height: 100%;
+}
+
+
+.mdl-navigation__link{
+    padding: 5px !important;
+}
+
+section.folders-files{
+    width:100%;
+}
+
+ng-view{
+    height: 100%;
+}
+
+body{ height: 100%;}

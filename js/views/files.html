@@ -1,0 +1,42 @@
+<div class="mdl-layout__drawer">
+
+    <button id="skapa" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+        CREATE
+    </button>
+
+    <!-- folders tree -->
+    <nav class="mdl-navigation">
+        <a class="mdl-navigation__link" href="">
+            <span class="mdl-button mdl-js-button mdl-button--icon" data-upgraded=",MaterialButton">
+                <i class="material-icons">folder</i>
+            </span>Min enhent
+        </a>
+        <a class="mdl-navigation__link" href="">&nbsp;&nbsp;&nbsp;&nbsp;
+            <span class="mdl-button mdl-js-button mdl-button--icon" data-upgraded=",MaterialButton">
+                <i class="material-icons">folder</i>
+            </span>Test
+        </a>
+    </nav>
+</div>
+
+<!-- Folders & files list -->
+<section id="folders-files" class="mdl-layout__content">
+    <table class="mdl-data-table mdl-js-data-table  mdl-shadow--2dp">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Owner</th>
+            <th>Update date</th>
+            <th>Size</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="file in files">
+            <td>{{file.name}}</td>
+            <td>{{file.owner}}</td>
+            <td>{{file.updateDate}}</td>
+            <td>{{file.size}}</td>
+        </tr>
+        </tbody>
+    </table>
+</section>

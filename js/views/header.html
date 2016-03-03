@@ -1,0 +1,45 @@
+<div class="mdl-layout__header-row">
+
+    <!-- Title -->
+    <span class="mdl-layout-title"><strong>FILE MANAGER</strong></span>
+    <div class="header-separator"></div>
+
+    <!-- breadcrumbs -->
+    <md-button ng-repeat="folder in breadcrumbs">{{folder.name}}</md-button>
+
+    <div class="mdl-layout-spacer"></div>
+
+    <!-- Navigation -->
+    <nav class="mdl-navigation">
+        <button class="mdl-button mdl-js-button mdl-button--icon" data-upgraded=",MaterialButton">
+            <i class="material-icons">link</i>
+        </button>
+        <button class="mdl-button mdl-js-button mdl-button--icon" data-upgraded=",MaterialButton">
+            <i class="material-icons">person_add</i>
+        </button>
+        <button class="mdl-button mdl-js-button mdl-button--icon" data-upgraded=",MaterialButton">
+            <i class="material-icons">delete</i>
+        </button>
+    </nav>
+
+    <!-- Right aligned menu below button -->
+    <button id="info-menu-lower-right"
+            class="mdl-button mdl-js-button mdl-button--icon">
+        <i class="material-icons">more_vert</i>
+    </button>
+
+    <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+        for="info-menu-lower-right">
+        <li class="mdl-menu__item">Some Action</li>
+        <li class="mdl-menu__item">Another Action</li>
+        <li disabled class="mdl-menu__item">Disabled Action</li>
+        <li class="mdl-menu__item">Yet Another Action</li>
+    </ul>
+
+    <div class="vertical-separator"></div>
+
+    <button class="mdl-button mdl-js-button mdl-button--icon" data-upgraded=",MaterialButton">
+        <i class="material-icons">info_outline</i>
+    </button>
+
+</div>
