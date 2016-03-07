@@ -1,4 +1,4 @@
-<div class="mdl-layout__drawer">
+<div id="left">
 
     <button id="skapa" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
         CREATE
@@ -11,10 +11,10 @@
 </div>
 
 <!-- Folders & files list -->
-<section id="folders-files" class="mdl-layout__content">
+<section id="right">
 
-            <table class="mdl-data-table mdl-js-data-table  mdl-shadow--2dp" id="maintable">
-                <thead>
+    <table class="mdl-data-table mdl-js-data-table  mdl-shadow--2dp" id="maintable">
+        <thead>
                 <tr>
                     <th></th>
                     <th>Name</th>
@@ -22,8 +22,8 @@
                     <th>Update date</th>
                     <th>Size</th>
                 </tr>
-                </thead>
-                <tbody>
+        </thead>
+        <tbody>
                 <tr ng-if="item.parent" ng-repeat="item in foldersFiles">
                     <td><i class="material-icons" folder-id="5">folder</i></td>
                     <td style="text-align: left;">{{item.name}}</td>
@@ -38,8 +38,8 @@
                     <td>{{item.updateDate}}</td>
                     <td>{{item.size}}</td>
                 </tr>
-                </tbody>
-            </table>
+        </tbody>
+    </table>
 
 </section>
 
