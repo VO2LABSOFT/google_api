@@ -6,40 +6,34 @@
 
     <!-- folders tree -->
     <nav class="mdl-navigation">
-        <ul folders-tree class="root"></ul>
+        <ul folders-tree class="root" tree="{{tree}}"></ul>
     </nav>
 </div>
 
 <!-- Folders & files list -->
 <section id="right">
 
-    <table class="mdl-data-table mdl-js-data-table  mdl-shadow--2dp" id="maintable">
-        <thead>
-                <tr>
-                    <th></th>
-                    <th>Name</th>
-                    <th>Owner</th>
-                    <th>Update date</th>
-                    <th>Size</th>
-                </tr>
-        </thead>
-        <tbody>
-                <tr ng-if="item.parent" ng-repeat="item in foldersFiles">
-                    <td><i class="material-icons" folder-id="5">folder</i></td>
-                    <td style="text-align: left;">{{item.name}}</td>
-                    <td>{{item.owner}}</td>
-                    <td>{{item.updateDate}}</td>
-                    <td>{{item.size}}</td>
-                </tr>
-                <tr ng-if="item.folder" ng-repeat="item in foldersFiles">
-                    <td><i class="material-icons">insert_drive_file</i></td>
-                    <td>{{item.name}}</td>
-                    <td>{{item.owner}}</td>
-                    <td>{{item.updateDate}}</td>
-                    <td>{{item.size}}</td>
-                </tr>
-        </tbody>
-    </table>
+    <md-progress-linear md-mode="indeterminate" ng-class="{'hidden' : $parent.loaded}"></md-progress-linear>
+
+    <div class="tableheader">
+        <div class="mdl-grid">
+            <div class="mdl-cell mdl-cell--6-col">Name</div>
+            <div class="mdl-cell mdl-cell--2-col">Owner</div>
+            <div class="mdl-cell mdl-cell--2-col">Update date</div>
+            <div class="mdl-cell mdl-cell--2-col">Size</div>
+        </div>
+    </div>
+
+    <div class="tablerow">
+        <div ng-repeat="item in foldersFiles" class="mdl-grid">
+            <div class="mdl-cell mdl-cell--6-col">
+                <i class="material-icons" folder-id="5">folder</i>
+                <span>{{item.name}}</span></div>
+            <div class="mdl-cell mdl-cell--2-col">{{item.owner}}</div>
+            <div class="mdl-cell mdl-cell--2-col">{{item.updateDate}}</div>
+            <div class="mdl-cell mdl-cell--2-col">{{item.size}}</div>
+        </div>
+    </div>
 
 </section>
 

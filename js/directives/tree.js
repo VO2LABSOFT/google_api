@@ -2,10 +2,10 @@ mainApp.directive('foldersTree', ['gdisk', function (gdisk) {
 
     return {
 
+        restrict: "EA",
         compile: function(element, attributes){
-
-
             return {
+
                 pre: function(scope, element, attributes, controller, transcludeFn){
 
                     /**
@@ -21,8 +21,6 @@ mainApp.directive('foldersTree', ['gdisk', function (gdisk) {
                             var _f = gdisk.folder(folderId);
                             var childs = angular.element(e.target).parent().parent().find('ul')[0];
                             childs = angular.element(childs);
-
-                            console.log(childs);
 
                             if(childs.hasClass('hidden')) { // show
                                 childs.removeClass('hidden').addClass('visible');// show
@@ -112,7 +110,6 @@ mainApp.directive('foldersTree', ['gdisk', function (gdisk) {
 
                 },
                 post: function(scope, element, attributes, controller, transcludeFn){
-
                     var tree = scope.tree;
                     var root = element;
 
@@ -122,9 +119,12 @@ mainApp.directive('foldersTree', ['gdisk', function (gdisk) {
                     }
 
                     root.append(_folders);
+
+                    scope.$watch('tree', function(){
+                        console.log('watch tree');
+                    });
                 }
             }
         }
-
     }
 }]);

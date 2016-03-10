@@ -1,7 +1,7 @@
 
 'use strict';
 
-mainApp.service('gdisk', function(){
+mainApp.service('gdisk', ['Drive', function(Drive){
 
     /**
      * Link to scope
@@ -52,11 +52,32 @@ mainApp.service('gdisk', function(){
      * @returns {Array}
      */
     this.rootFolders = function(){
-        var roots = [];
-        for(var i in folders) {
-            if(folders[i]['parent'] == 0) roots.push(folders[i]);
-        }
-        return roots;
+
+        return Drive.listFiles({'maxResults':1000}).then(function(resp){
+
+            var _folders = [];
+            var data = resp.items;
+            for(var i in data) {
+                var item = {};
+                if(data[i]['mimeType']=='application/vnd.google-apps.folder'){
+                    item['id'] = data[i]['id'];
+                    item['name'] = data[i]['title'];
+                    item['owner'] = data[i]['ownerNames'].join(', ');
+                    item['updateDate'] = data[i]['modifiedDate'];
+                    item['collapsed'] = true;
+                    item['parent'] = 1;
+                    _folders.push(item);
+                }
+            }
+
+            var roots = [];
+            for(var i in folders) {
+                if(folders[i]['parent'] == 0) roots.push(folders[i]);
+            }
+            return roots;
+
+        });
+
     };
 
     this.files = function(folder) {
@@ -165,4 +186,4 @@ mainApp.service('gdisk', function(){
         return items;
     }
 
-});
+}]);
