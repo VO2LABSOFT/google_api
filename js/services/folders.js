@@ -39,6 +39,12 @@ mainApp.service('gdisk', ['Drive', function(Drive){
         {'id':'27','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true}
     ];
 
+    // selected folders on page
+    var selectedFolders = [];
+
+    // selected files on page
+    var selectedFiles = [];
+
     // dummy files
     var files = [
         {'id':'1', 'folder':'1', 'name':'testFile.txt','owner':'me','size':'100K','updateDate':'10.10.15', 'isfile':true},
@@ -66,41 +72,44 @@ mainApp.service('gdisk', ['Drive', function(Drive){
      * @returns {*}
      */
     this.loadFiles = function(){
-        return Drive.listFiles({'maxResults':1000}).then(function(resp){
+        return Drive.listFiles({'maxResults':2000}).then(function(resp){
 
             var _folders = [];
             var _files = [];
             var data = resp.items;
             for(var i in data) {
                 var item = {};
-                if(data[i]['mimeType']=='application/vnd.google-apps.folder'){
 
-                    if(data[i]['parents'][0]){
-                        item['id'] = data[i]['id'];
-                        item['name'] = data[i]['title'];
-                        item['owner'] = data[i]['ownerNames'].join(', ');
-                        item['updateDate'] = data[i]['modifiedDate'];
-                        item['collapsed'] = true;
-                        item['parent'] = data[i]['parents'][0]['isRoot'] ? 0 : data[i]['parents'][0]['id'] ;
+                if(!data[i]['explicitlyTrashed']){
+                    if(data[i]['mimeType']=='application/vnd.google-apps.folder'){
+                        if(data[i]['parents'][0]){
+                            item['id'] = data[i]['id'];
+                            item['name'] = data[i]['title'];
+                            item['owner'] = data[i]['ownerNames'].join(', ');
+                            item['updateDate'] = data[i]['modifiedDate'];
+                            item['collapsed'] = true;
+                            item['parent'] = data[i]['parents'][0]['isRoot'] ? 0 : data[i]['parents'][0]['id'] ;
+                            item['iconLink'] = data[i]['iconLink'];
+                            item['selected'] = false;
+                        }
+                        _folders.push(item);
+                    }else{
+                        if(data[i]['parents'][0]){
+                            item['id'] = data[i]['id'];
+                            item['name'] = data[i]['title'];
+                            item['owner'] = data[i]['ownerNames'].join(', ');
+                            item['updateDate'] = data[i]['modifiedDate'];
+                            item['collapsed'] = true;
+                            item['folder'] = data[i]['parents'][0]['isRoot'] ? 0 : data[i]['parents'][0]['id'] ;
+                            item['isfile'] = true;
+                            item['size'] = data[i]['fileSize'];
+                            item['iconLink'] = data[i]['iconLink'];
+                            item['selected'] = false;
+                        }
+                        _files.push(item);
                     }
-
-                    _folders.push(item);
-                }else{
-
-                    if(data[i]['parents'][0]){
-                        item['id'] = data[i]['id'];
-                        item['name'] = data[i]['title'];
-                        item['owner'] = data[i]['ownerNames'].join(', ');
-                        item['updateDate'] = data[i]['modifiedDate'];
-                        item['collapsed'] = true;
-                        item['folder'] = data[i]['parents'][0]['isRoot'] ? 0 : data[i]['parents'][0]['id'] ;
-                        item['isfile'] = true;
-                        item['size'] = data[i]['fileSize'];
-                        item['iconLink'] = data[i]['iconLink'];
-                    }
-                    _files.push(item);
-
                 }
+
             }
             folders = _folders;
             files = _files;
@@ -174,8 +183,9 @@ mainApp.service('gdisk', ['Drive', function(Drive){
                 }
             }
             return subFolders.length > 0 ? subFolders : false;
+        }else{
+            return mObj.rootFolders();
         }
-        return false;
     };
 
     /**
@@ -209,7 +219,7 @@ mainApp.service('gdisk', ['Drive', function(Drive){
      * @returns {Array}
      */
     this.foldersFiles = function(folder) {
-        folder = folder || 0;
+        folder = folder || '0';
         var items = [];
         var _subFolders = mObj.subFolders(folder);
         var _files = mObj.filesInFolder(folder);
@@ -221,6 +231,67 @@ mainApp.service('gdisk', ['Drive', function(Drive){
             items.push(_files[i]);
         }
         return items;
-    }
+    };
+
+    /**
+     * select|deselect folder
+     * @param folder
+     */
+    this.selectFolder = function(folder) {
+        if(selectedFolders.indexOf(folder) == -1){
+            selectedFolders.push(folder);
+        } else {
+            delete(selectedFolders[selectedFolders.indexOf(folder)]);
+            selectedFolders.length--;
+        }
+    };
+
+    /**
+     * select|deselect file
+     * @param file
+     */
+    this.selectFile = function(file) {
+        if(selectedFiles.indexOf(file) == -1){
+            selectedFiles.push(file);
+        } else {
+            delete(selectedFiles[selectedFiles.indexOf(file)]);
+            selectedFiles.length--;
+        }
+    };
+
+    /**
+     * Remove all selected files|folders
+     */
+    this.deleteSelected = function() {
+
+        if(selectedFiles.length > 0){
+            angular.forEach(selectedFiles, function(file, key) {
+                mObj.deleteFile(file);
+            });
+        }
+
+        if(selectedFolders.length > 0){
+            angular.forEach(selectedFolders, function(folder, key) {
+                mObj.deleteFolder(folder);
+            });
+        }
+    };
+
+    this.deleteFile = function(file){
+        Drive.deleteFiles(file.id).then(function(resp){
+            if(resp.status == 204){
+
+                // remove from selected
+                angular.forEach(selectedFiles, function(file, key) {
+                    mObj.deleteFile(file);
+                });
+
+            }
+        });
+    };
+
+    this.deleteFolder = function(folder){
+        console.log(folder);
+    };
 
 }]);

@@ -25,24 +25,28 @@
     </div>
 
     <div class="tablerow">
-        <div ng-if="!item.isfile" ng-repeat="item in foldersFiles" class="mdl-grid">
+
+        <!-- folders -->
+        <div ng-repeat="folder in folders | orderBy:'name'" class="mdl-grid" id="{{folder.id}}" ng-click="selectFolder(folder)">
             <div class="mdl-cell mdl-cell--6-col">
-                <i ng-click="goto(item.id)" class="material-icons" folder-id="5">folder</i>
-                <span>{{item.name}}</span>
-            </div>
-            <div class="mdl-cell mdl-cell--2-col">{{item.owner}}</div>
-            <div class="mdl-cell mdl-cell--2-col">{{item.updateDate}}</div>
-            <div class="mdl-cell mdl-cell--2-col">{{item.size}}</div>
+                <img ng-click="goto(folder.id)" ng-src="{{folder.iconLink}}" />
+                <span>{{folder.name}}</span></div>
+            <div class="mdl-cell mdl-cell--2-col">{{folder.owner}}</div>
+            <div class="mdl-cell mdl-cell--2-col">{{folder.updateDate}}</div>
+            <div class="mdl-cell mdl-cell--2-col">{{folder.size}}</div>
         </div>
 
-        <div ng-if="item.isfile" ng-repeat="item in foldersFiles" class="mdl-grid">
+        <!-- files -->
+        <div ng-repeat="file in files | orderBy:'name'" class="mdl-grid" id="{{file.id}}" ng-click="selectFile(file)">
             <div class="mdl-cell mdl-cell--6-col">
-                <img ng-src="{{item.iconLink}}" />
-                <span>{{item.name}}</span></div>
-            <div class="mdl-cell mdl-cell--2-col">{{item.owner}}</div>
-            <div class="mdl-cell mdl-cell--2-col">{{item.updateDate}}</div>
-            <div class="mdl-cell mdl-cell--2-col">{{item.size}}</div>
+                <img  ng-src="{{file.iconLink}}"  />
+                <span >{{file.name}}</span>
+            </div>
+            <div class="mdl-cell mdl-cell--2-col">{{file.owner}}</div>
+            <div class="mdl-cell mdl-cell--2-col">{{file.updateDate}}</div>
+            <div class="mdl-cell mdl-cell--2-col">{{file.size}}</div>
         </div>
+
     </div>
 
 </section>

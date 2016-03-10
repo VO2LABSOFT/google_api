@@ -15,18 +15,21 @@ mainApp.controller('MainController', ['$scope', '$http', '$routeParams', 'gdisk'
             folder.fid = 0;
         }
 
-        $scope.foldersFiles = [];
+        $scope.folders = [];
+        $scope.files = [];
 
         $scope.breadcrumbs = gdisk.breadcrumbs(folder.fid);
-
-        console.log($scope.breadcrumbs);
 
         GAPI.init().then(function(){
 
             gdisk.loadFiles().then(function(){
 
-                $scope.tree = gdisk.rootFolders();
-                $scope.foldersFiles = gdisk.foldersFiles(folder.fid);
+                var _tree = gdisk.rootFolders();
+                if(!$scope.tree) $scope.tree = _tree;
+
+                $scope.folders = gdisk.subFolders(folder.fid);
+                $scope.files = gdisk.filesInFolder(folder.fid);
+
                 $scope.loaded = true;
                 $scope.breadcrumbs = gdisk.breadcrumbs(folder.fid);
 
@@ -36,12 +39,44 @@ mainApp.controller('MainController', ['$scope', '$http', '$routeParams', 'gdisk'
 
         $scope.goto = function(e){
             //e.preventDefault();
-            document.location.hash = "#/folder/"+e;
+            if(e === '0') document.location.hash = "#/";
+            else document.location.hash = "#/folder/"+e;
         };
 
-        //$scope.breadcrumbs = gdisk.breadcrumbs(folder.fid); // breadcrumbs
-        //$scope.folder = folder; // сurrent folder
-        //$scope.foldersFiles = gdisk.foldersFiles(folder.fid);
+        $scope.selectFolder = function(folder){
+
+            if(folder){
+                var parent = angular.element(event.target).parent();
+                if(parent.hasClass('mdl-grid')){
+                    if(parent.hasClass('selected')){
+                        angular.element(event.target).parent().removeClass('selected');
+                    }else{
+                        angular.element(event.target).parent().addClass('selected');
+                    }
+                    gdisk.selectFolder(folder);
+                }
+            }
+            return false;
+        };
+
+        $scope.selectFile = function(file){
+            if(file){
+                var parent = angular.element(event.target).parent();
+                if(parent.hasClass('mdl-grid')){
+                    if(parent.hasClass('selected')){
+                        angular.element(event.target).parent().removeClass('selected');
+                    }else{
+                        angular.element(event.target).parent().addClass('selected');
+                    }
+                    gdisk.selectFile(file);
+                }
+            }
+            return false;
+        };
+
+        $scope.deleteSelected = function(){
+            gdisk.deleteSelected();
+        }
 
     }]
 );

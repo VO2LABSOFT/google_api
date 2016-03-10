@@ -160,3 +160,10 @@ md-progress-linear{
     position: absolute !important;
     top: 60px;
 }
+
+.tablerow .selected{
+    background-color: #4285f4;
+}
+.tablerow .selected .mdl-cell{
+    color: white;
+}
