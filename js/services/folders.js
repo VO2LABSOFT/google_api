@@ -1,7 +1,7 @@
 
 'use strict';
 
-mainApp.service('gdisk', function(){
+mainApp.service('gdisk', ['Drive', function(Drive){
 
     /**
      * Link to scope
@@ -39,6 +39,12 @@ mainApp.service('gdisk', function(){
         {'id':'27','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true}
     ];
 
+    // selected folders on page
+    var selectedFolders = [];
+
+    // selected files on page
+    var selectedFiles = [];
+
     // dummy files
     var files = [
         {'id':'1', 'folder':'1', 'name':'testFile.txt','owner':'me','size':'100K','updateDate':'10.10.15', 'isfile':true},
@@ -52,11 +58,62 @@ mainApp.service('gdisk', function(){
      * @returns {Array}
      */
     this.rootFolders = function(){
+
         var roots = [];
         for(var i in folders) {
             if(folders[i]['parent'] == 0) roots.push(folders[i]);
         }
         return roots;
+
+    };
+
+    /**
+     * Load files list from api
+     * @returns {*}
+     */
+    this.loadFiles = function(){
+        return Drive.listFiles({'maxResults':2000}).then(function(resp){
+
+            var _folders = [];
+            var _files = [];
+            var data = resp.items;
+            for(var i in data) {
+                var item = {};
+
+                if(!data[i]['explicitlyTrashed']){
+                    if(data[i]['mimeType']=='application/vnd.google-apps.folder'){
+                        if(data[i]['parents'][0]){
+                            item['id'] = data[i]['id'];
+                            item['name'] = data[i]['title'];
+                            item['owner'] = data[i]['ownerNames'].join(', ');
+                            item['updateDate'] = data[i]['modifiedDate'];
+                            item['collapsed'] = true;
+                            item['parent'] = data[i]['parents'][0]['isRoot'] ? 0 : data[i]['parents'][0]['id'] ;
+                            item['iconLink'] = data[i]['iconLink'];
+                            item['selected'] = false;
+                        }
+                        _folders.push(item);
+                    }else{
+                        if(data[i]['parents'][0]){
+                            item['id'] = data[i]['id'];
+                            item['name'] = data[i]['title'];
+                            item['owner'] = data[i]['ownerNames'].join(', ');
+                            item['updateDate'] = data[i]['modifiedDate'];
+                            item['collapsed'] = true;
+                            item['folder'] = data[i]['parents'][0]['isRoot'] ? 0 : data[i]['parents'][0]['id'] ;
+                            item['isfile'] = true;
+                            item['size'] = data[i]['fileSize'];
+                            item['iconLink'] = data[i]['iconLink'];
+                            item['selected'] = false;
+                        }
+                        _files.push(item);
+                    }
+                }
+
+            }
+            folders = _folders;
+            files = _files;
+        });
     };
 
     this.files = function(folder) {
@@ -84,6 +141,9 @@ mainApp.service('gdisk', function(){
                 else return _b;
             }
         }
+
+        _b.push({'id':'0','parent':'0','name':'Min enhet','owner':'me','size':'','updateDate':'', 'collapsed':true});
+
         return _b.reverse();
     };
 
@@ -123,8 +183,9 @@ mainApp.service('gdisk', function(){
                 }
             }
             return subFolders.length > 0 ? subFolders : false;
+        }else{
+            return mObj.rootFolders();
         }
-        return false;
     };
 
     /**
@@ -142,8 +203,14 @@ mainApp.service('gdisk', function(){
                 }
             }
             return _files.length > 0 ? _files : false;
+        }else{
+            for(var _f in files) {
+                if(files[_f]['folder'] == 0) {
+                    _files.push(files[_f]);
+                }
+            }
+            return _files.length > 0 ? _files : false;
         }
-        return false;
     };
 
     /**
@@ -152,6 +219,7 @@ mainApp.service('gdisk', function(){
      * @returns {Array}
      */
     this.foldersFiles = function(folder) {
+        folder = folder || '0';
         var items = [];
         var _subFolders = mObj.subFolders(folder);
         var _files = mObj.filesInFolder(folder);
@@ -163,6 +231,67 @@ mainApp.service('gdisk', function(){
             items.push(_files[i]);
         }
         return items;
-    }
+    };
 
-});
+    /**
+     * select|deselect folder
+     * @param folder
+     */
+    this.selectFolder = function(folder) {
+        if(selectedFolders.indexOf(folder) == -1){
+            selectedFolders.push(folder);
+        } else {
+            delete(selectedFolders[selectedFolders.indexOf(folder)]);
+            selectedFolders.length--;
+        }
+    };
+
+    /**
+     * select|deselect file
+     * @param file
+     */
+    this.selectFile = function(file) {
+        if(selectedFiles.indexOf(file) == -1){
+            selectedFiles.push(file);
+        } else {
+            delete(selectedFiles[selectedFiles.indexOf(file)]);
+            selectedFiles.length--;
+        }
+    };
+
+    /**
+     * Remove all selected files|folders
+     */
+    this.deleteSelected = function() {
+
+        if(selectedFiles.length > 0){
+            angular.forEach(selectedFiles, function(file, key) {
+                mObj.deleteFile(file);
+            });
+        }
+
+        if(selectedFolders.length > 0){
+            angular.forEach(selectedFolders, function(folder, key) {
+                mObj.deleteFolder(folder);
+            });
+        }
+    };
+
+    this.deleteFile = function(file){
+        Drive.deleteFiles(file.id).then(function(resp){
+            if(resp.status == 204){
+
+                // remove from selected
+                angular.forEach(selectedFiles, function(file, key) {
+                    mObj.deleteFile(file);
+                });
+
+            }
+        });
+    };
+
+    this.deleteFolder = function(folder){
+        console.log(folder);
+    };
+
+}]);

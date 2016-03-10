@@ -5,57 +5,78 @@
 mainApp.controller('MainController', ['$scope', '$http', '$routeParams', 'gdisk', 'GAPI', 'Drive',
     function($scope, $http, $routeParams,gdisk, GAPI, Drive) {
 
+        $scope.loaded = false; // loading animations
+
         // cur folder
         var folder = {"fid":1};
         if($routeParams['folder']){
             folder.fid = $routeParams['folder'];
         }else{
-            folder.fid = '1';
+            folder.fid = 0;
         }
 
-        if(!$scope.tree) {
-            $scope.tree = gdisk.rootFolders(); // show only root folders in first time
-        }
+        $scope.folders = [];
+        $scope.files = [];
 
-        $scope.breadcrumbs = gdisk.breadcrumbs(folder.fid); // breadcrumbs
-        $scope.folder = folder; // сurrent folder
+        $scope.breadcrumbs = gdisk.breadcrumbs(folder.fid);
 
-        $scope.foldersFiles = gdisk.foldersFiles(folder.fid);
+        GAPI.init().then(function(){
 
-        $scope.auth=function(){
-            GAPI.init();
-            //$scope.list = Drive.listFiles();
-        };
-        //GAPI.init();
+            gdisk.loadFiles().then(function(){
 
+                var _tree = gdisk.rootFolders();
+                if(!$scope.tree) $scope.tree = _tree;
 
-        $scope.filesList = function(){
+                $scope.folders = gdisk.subFolders(folder.fid);
+                $scope.files = gdisk.filesInFolder(folder.fid);
 
-            Drive.listFiles({'maxResults':1000}).then(function(resp){
-
-                var folders = [];
-                var data = resp.items;
-                for(var i in data) {
-                    var item = {};
-                    if(data[i]['mimeType']=='application/vnd.google-apps.folder'){
-                        item['id'] = data[i]['id'];
-                        item['name'] = data[i]['title'];
-                        item['owner'] = data[i]['ownerNames'].join(', ');
-                        item['updateDate'] = data[i]['modifiedDate'];
-                        item['collapsed'] = true;
-                        item['parent'] = 1;
-                        folders.push(item);
-                    }
-                }
-
-                console.log(folders);
-                $scope.foldersFiles = folders;
+                $scope.loaded = true;
+                $scope.breadcrumbs = gdisk.breadcrumbs(folder.fid);
 
             });
 
-        }
+        });
 
+        $scope.goto = function(e){
+            //e.preventDefault();
+            if(e === '0') document.location.hash = "#/";
+            else document.location.hash = "#/folder/"+e;
+        };
+
+        $scope.selectFolder = function(folder){
+
+            if(folder){
+                var parent = angular.element(event.target).parent();
+                if(parent.hasClass('mdl-grid')){
+                    if(parent.hasClass('selected')){
+                        angular.element(event.target).parent().removeClass('selected');
+                    }else{
+                        angular.element(event.target).parent().addClass('selected');
+                    }
+                    gdisk.selectFolder(folder);
+                }
+            }
+            return false;
+        };
+
+        $scope.selectFile = function(file){
+            if(file){
+                var parent = angular.element(event.target).parent();
+                if(parent.hasClass('mdl-grid')){
+                    if(parent.hasClass('selected')){
+                        angular.element(event.target).parent().removeClass('selected');
+                    }else{
+                        angular.element(event.target).parent().addClass('selected');
+                    }
+                    gdisk.selectFile(file);
+                }
+            }
+            return false;
+        };
+
+        $scope.deleteSelected = function(){
+            gdisk.deleteSelected();
+        }
 
     }]
 );
-
