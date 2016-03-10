@@ -142,7 +142,7 @@ mainApp.service('gdisk', ['Drive', function(Drive){
             }
         }
 
-        _b.push({'id':'0','parent':'0','name':'Disk','owner':'me','size':'','updateDate':'', 'collapsed':true});
+        _b.push({'id':'0','parent':'0','name':'Min enhet','owner':'me','size':'','updateDate':'', 'collapsed':true});
 
         return _b.reverse();
     };
