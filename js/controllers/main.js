@@ -5,57 +5,39 @@
 mainApp.controller('MainController', ['$scope', '$http', '$routeParams', 'gdisk', 'GAPI', 'Drive',
     function($scope, $http, $routeParams,gdisk, GAPI, Drive) {
 
-        $scope.loaded = false;
+        $scope.loaded = false; // loading animations
 
         // cur folder
         var folder = {"fid":1};
         if($routeParams['folder']){
             folder.fid = $routeParams['folder'];
         }else{
-            folder.fid = '1';
+            folder.fid = 0;
         }
+
+        $scope.foldersFiles = [];
+
+        $scope.breadcrumbs = gdisk.breadcrumbs(folder.fid);
+
+        console.log($scope.breadcrumbs);
 
         GAPI.init().then(function(){
 
-            if(!$scope.tree) {
-                $scope.loaded = false;
-                gdisk.rootFolders().then(function(folders){
+            gdisk.loadFiles().then(function(){
 
-                    //$scope.$apply(function(){
-                        //console.log(folders);
-                        $scope.$tree = folders;
-                        $scope.loaded = true;
-                        //$scope.$apply();
-                    //});
+                $scope.tree = gdisk.rootFolders();
+                $scope.foldersFiles = gdisk.foldersFiles(folder.fid);
+                $scope.loaded = true;
+                $scope.breadcrumbs = gdisk.breadcrumbs(folder.fid);
 
-                });
-            }
-
-
-
-            Drive.listFiles({'maxResults':1000}).then(function(resp){
-
-                var _folders = [];
-                var data = resp.items;
-                for(var i in data) {
-                    var item = {};
-                    if(data[i]['mimeType']=='application/vnd.google-apps.folder'){
-                        item['id'] = data[i]['id'];
-                        item['name'] = data[i]['title'];
-                        item['owner'] = data[i]['ownerNames'].join(', ');
-                        item['updateDate'] = data[i]['modifiedDate'];
-                        item['collapsed'] = true;
-                        item['parent'] = 1;
-                        _folders.push(item);
-                    }
-                }
-
-                $scope.foldersFiles = _folders;
-
-            })
-
+            });
 
         });
+
+        $scope.goto = function(e){
+            //e.preventDefault();
+            document.location.hash = "#/folder/"+e;
+        };
 
         //$scope.breadcrumbs = gdisk.breadcrumbs(folder.fid); // breadcrumbs
         //$scope.folder = folder; // сurrent folder
@@ -63,4 +45,3 @@ mainApp.controller('MainController', ['$scope', '$http', '$routeParams', 'gdisk'
 
     }]
 );
-

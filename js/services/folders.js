@@ -53,31 +53,58 @@ mainApp.service('gdisk', ['Drive', function(Drive){
      */
     this.rootFolders = function(){
 
+        var roots = [];
+        for(var i in folders) {
+            if(folders[i]['parent'] == 0) roots.push(folders[i]);
+        }
+        return roots;
+
+    };
+
+    /**
+     * Load files list from api
+     * @returns {*}
+     */
+    this.loadFiles = function(){
         return Drive.listFiles({'maxResults':1000}).then(function(resp){
 
             var _folders = [];
+            var _files = [];
             var data = resp.items;
             for(var i in data) {
                 var item = {};
                 if(data[i]['mimeType']=='application/vnd.google-apps.folder'){
-                    item['id'] = data[i]['id'];
-                    item['name'] = data[i]['title'];
-                    item['owner'] = data[i]['ownerNames'].join(', ');
-                    item['updateDate'] = data[i]['modifiedDate'];
-                    item['collapsed'] = true;
-                    item['parent'] = 1;
+
+                    if(data[i]['parents'][0]){
+                        item['id'] = data[i]['id'];
+                        item['name'] = data[i]['title'];
+                        item['owner'] = data[i]['ownerNames'].join(', ');
+                        item['updateDate'] = data[i]['modifiedDate'];
+                        item['collapsed'] = true;
+                        item['parent'] = data[i]['parents'][0]['isRoot'] ? 0 : data[i]['parents'][0]['id'] ;
+                    }
+
                     _folders.push(item);
+                }else{
+
+                    if(data[i]['parents'][0]){
+                        item['id'] = data[i]['id'];
+                        item['name'] = data[i]['title'];
+                        item['owner'] = data[i]['ownerNames'].join(', ');
+                        item['updateDate'] = data[i]['modifiedDate'];
+                        item['collapsed'] = true;
+                        item['folder'] = data[i]['parents'][0]['isRoot'] ? 0 : data[i]['parents'][0]['id'] ;
+                        item['isfile'] = true;
+                        item['size'] = data[i]['fileSize'];
+                        item['iconLink'] = data[i]['iconLink'];
+                    }
+                    _files.push(item);
+
                 }
             }
-
-            var roots = [];
-            for(var i in folders) {
-                if(folders[i]['parent'] == 0) roots.push(folders[i]);
-            }
-            return roots;
-
+            folders = _folders;
+            files = _files;
         });
-
     };
 
     this.files = function(folder) {
@@ -105,6 +132,9 @@ mainApp.service('gdisk', ['Drive', function(Drive){
                 else return _b;
             }
         }
+
+        _b.push({'id':'0','parent':'0','name':'Disk','owner':'me','size':'','updateDate':'', 'collapsed':true});
+
         return _b.reverse();
     };
 
@@ -163,8 +193,14 @@ mainApp.service('gdisk', ['Drive', function(Drive){
                 }
             }
             return _files.length > 0 ? _files : false;
+        }else{
+            for(var _f in files) {
+                if(files[_f]['folder'] == 0) {
+                    _files.push(files[_f]);
+                }
+            }
+            return _files.length > 0 ? _files : false;
         }
-        return false;
     };
 
     /**
@@ -173,6 +209,7 @@ mainApp.service('gdisk', ['Drive', function(Drive){
      * @returns {Array}
      */
     this.foldersFiles = function(folder) {
+        folder = folder || 0;
         var items = [];
         var _subFolders = mObj.subFolders(folder);
         var _files = mObj.filesInFolder(folder);

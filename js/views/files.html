@@ -25,9 +25,19 @@
     </div>
 
     <div class="tablerow">
-        <div ng-repeat="item in foldersFiles" class="mdl-grid">
+        <div ng-if="!item.isfile" ng-repeat="item in foldersFiles" class="mdl-grid">
             <div class="mdl-cell mdl-cell--6-col">
-                <i class="material-icons" folder-id="5">folder</i>
+                <i ng-click="goto(item.id)" class="material-icons" folder-id="5">folder</i>
+                <span>{{item.name}}</span>
+            </div>
+            <div class="mdl-cell mdl-cell--2-col">{{item.owner}}</div>
+            <div class="mdl-cell mdl-cell--2-col">{{item.updateDate}}</div>
+            <div class="mdl-cell mdl-cell--2-col">{{item.size}}</div>
+        </div>
+
+        <div ng-if="item.isfile" ng-repeat="item in foldersFiles" class="mdl-grid">
+            <div class="mdl-cell mdl-cell--6-col">
+                <img ng-src="{{item.iconLink}}" />
                 <span>{{item.name}}</span></div>
             <div class="mdl-cell mdl-cell--2-col">{{item.owner}}</div>
             <div class="mdl-cell mdl-cell--2-col">{{item.updateDate}}</div>

@@ -7,7 +7,7 @@
     <!-- breadcrumbs -->
     <nav class="mdl-navigation" ng-repeat="(key, value) in breadcrumbs">
         <i ng-if="key" class="material-icons">keyboard_arrow_right</i>
-        <md-button>{{value.name}}</md-button>
+        <md-button ng-click="goto(value.id)">{{value.name}}</md-button>
     </nav>
 
     <div class="mdl-layout-spacer"></div>
@@ -47,10 +47,6 @@
 
     <button ng-click="filesList()" class="mdl-button mdl-js-button mdl-button--icon" data-upgraded=",MaterialButton">
         <i ng-click="filesList()" class="material-icons">autorenew</i>
-    </button>
-
-    <button ng-click="auth()" class="mdl-button mdl-js-button mdl-button--icon" data-upgraded=",MaterialButton">
-        <i ng-click="auth()" class="material-icons">account_circle</i>
     </button>
 
 </div>

@@ -110,19 +110,23 @@ mainApp.directive('foldersTree', ['gdisk', function (gdisk) {
 
                 },
                 post: function(scope, element, attributes, controller, transcludeFn){
-                    var tree = scope.tree;
-                    var root = element;
-
-                    // build tree
-                    if(tree) {
-                        var _folders = scope.buildTree(root, tree);
-                    }
-
-                    root.append(_folders);
 
                     scope.$watch('tree', function(){
-                        console.log('watch tree');
+
+                        var tree = scope.tree;
+                        var root = element;
+
+                        angular.element(root).find('li').remove();
+
+                        // build tree
+                        if(tree) {
+                            var _folders = scope.buildTree(root, tree);
+                        }
+
+                        root.append(_folders);
+
                     });
+
                 }
             }
         }
