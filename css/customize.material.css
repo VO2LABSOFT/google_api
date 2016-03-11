@@ -166,3 +166,24 @@ md-progress-linear{
 .tablerow .selected .mdl-cell{
     color: white;
 }
+
+button.md-button{
+    vertical-align: middle;
+}
+
+button.md-button i, button.md-button span{
+    vertical-align: middle;
+}
+
+/** Modal dialogs */
+md-toolbar{
+    min-height: 40px !important;
+    background-color: #eeeeee;
+    color: #8f8f8f;
+}
+md-toolbar md-icon{
+    color: #8f8f8f;
+}
+.md-toolbar-tools{
+    height: 40px !important;
+}

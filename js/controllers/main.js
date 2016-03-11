@@ -2,81 +2,57 @@
 
 /* Controllers */
 
-mainApp.controller('MainController', ['$scope', '$http', '$routeParams', 'gdisk', 'GAPI', 'Drive',
-    function($scope, $http, $routeParams,gdisk, GAPI, Drive) {
+mainApp.controller('MainController', ['$scope', '$rootScope', '$http', '$routeParams', 'gdisk', 'GAPI', 'Drive', '$mdDialog', '$mdToast',
+    function($scope, $rootScope, $http, $routeParams,gdisk, GAPI, Drive, $mdDialog, $mdToast) {
 
-        $scope.loaded = false; // loading animations
+        this.name = 'MainController';
 
-        // cur folder
-        var folder = {"fid":1};
+        var scope = $rootScope;
+
+        var mObj = this;
+
+        /**
+         * DEFINE FOLDER
+         */
+        this.folder = {"fid":1};
         if($routeParams['folder']){
-            folder.fid = $routeParams['folder'];
+            this.folder.fid = $routeParams['folder'];
         }else{
-            folder.fid = 0;
+            this.folder.fid = 0;
         }
+        $rootScope.folder = this.folder;
 
-        $scope.folders = [];
-        $scope.files = [];
+        /**
+         * init default params
+         */
+        $rootScope.loaded = this.loaded = true; // loading animations
+        $rootScope.folders = this.folders = []; // folders in current folder
+        $rootScope.files = this.files = []; // files in current folder
+        //scope.tree = this.tree = scope.tree ? scope.tree : []; // empty tree
+        $rootScope.breadcrumbs = this.breadcrumbs = gdisk.breadcrumbs($rootScope.folder.fid); // breadcrumbs to current folder
 
-        $scope.breadcrumbs = gdisk.breadcrumbs(folder.fid);
-
+        /**
+         * Load files from api and render
+         */
         GAPI.init().then(function(){
 
+            $rootScope.loaded = false;
             gdisk.loadFiles().then(function(){
 
-                var _tree = gdisk.rootFolders();
-                if(!$scope.tree) $scope.tree = _tree;
+                if(!angular.equals(scope.tree, gdisk.rootFolders())){
+                    $rootScope.tree = gdisk.rootFolders();
+                }
 
-                $scope.folders = gdisk.subFolders(folder.fid);
-                $scope.files = gdisk.filesInFolder(folder.fid);
+                $rootScope.folders = gdisk.subFolders(mObj.folder.fid);
+                $rootScope.files = gdisk.filesInFolder(mObj.folder.fid);
 
-                $scope.loaded = true;
-                $scope.breadcrumbs = gdisk.breadcrumbs(folder.fid);
+                //console.log(scope.files);
+                $rootScope.loaded = true;
+                $rootScope.breadcrumbs = gdisk.breadcrumbs(mObj.folder.fid);
 
             });
 
         });
-
-        $scope.goto = function(e){
-            //e.preventDefault();
-            if(e === '0') document.location.hash = "#/";
-            else document.location.hash = "#/folder/"+e;
-        };
-
-        $scope.selectFolder = function(folder){
-
-            if(folder){
-                var parent = angular.element(event.target).parent();
-                if(parent.hasClass('mdl-grid')){
-                    if(parent.hasClass('selected')){
-                        angular.element(event.target).parent().removeClass('selected');
-                    }else{
-                        angular.element(event.target).parent().addClass('selected');
-                    }
-                    gdisk.selectFolder(folder);
-                }
-            }
-            return false;
-        };
-
-        $scope.selectFile = function(file){
-            if(file){
-                var parent = angular.element(event.target).parent();
-                if(parent.hasClass('mdl-grid')){
-                    if(parent.hasClass('selected')){
-                        angular.element(event.target).parent().removeClass('selected');
-                    }else{
-                        angular.element(event.target).parent().addClass('selected');
-                    }
-                    gdisk.selectFile(file);
-                }
-            }
-            return false;
-        };
-
-        $scope.deleteSelected = function(){
-            gdisk.deleteSelected();
-        }
 
     }]
 );

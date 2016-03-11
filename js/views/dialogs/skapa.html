@@ -1,0 +1,29 @@
+<md-dialog aria-label="Mango (Fruit)">
+    <form>
+
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h1>New folder</h1>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="ctrl.cancel()">
+                    <md-icon aria-label="Close dialog">close</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <md-input-container class="md-block">
+                <label>new folder</label>
+                <input ng-model="newfolder">
+            </md-input-container>
+
+
+            <md-dialog-actions layout="row" >
+                <span flex></span>
+                <md-button md-autofocus ng-click="savenewfolder()">Save</md-button>
+            </md-dialog-actions>
+
+        </md-dialog-content>
+
+    </form>
+</md-dialog>

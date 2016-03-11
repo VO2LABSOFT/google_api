@@ -3,6 +3,9 @@ mainApp.directive('foldersTree', ['gdisk', function (gdisk) {
     return {
 
         restrict: "EA",
+
+        controller: 'MainController',
+
         compile: function(element, attributes){
             return {
 
@@ -18,18 +21,20 @@ mainApp.directive('foldersTree', ['gdisk', function (gdisk) {
 
                         if(folderId) {
 
-                            var _f = gdisk.folder(folderId);
+                            //var _f = gdisk.folder(folderId);
                             var childs = angular.element(e.target).parent().parent().find('ul')[0];
                             childs = angular.element(childs);
 
                             if(childs.hasClass('hidden')) { // show
                                 childs.removeClass('hidden').addClass('visible');// show
                                 angular.element(e.target).html("keyboard_arrow_down");
-                                _f.collapsed = false;
+                                //_f.collapsed = false;
+                                gdisk.expandFolder(folderId)
                             } else { // hide
                                 childs.removeClass('visible').addClass('hidden');
                                 angular.element(e.target).html("keyboard_arrow_right");
-                                _f.collapsed = true;
+                                //_f.collapsed = true;
+                                gdisk.collapseFolder(folderId);
                             }
                         }
                     };
@@ -111,9 +116,9 @@ mainApp.directive('foldersTree', ['gdisk', function (gdisk) {
                 },
                 post: function(scope, element, attributes, controller, transcludeFn){
 
-                    scope.$watch('tree', function(){
+                    attributes.$observe('tree', function(value) {
 
-                        var tree = scope.tree;
+                        var tree = value ? JSON.parse(value) : '';
                         var root = element;
 
                         angular.element(root).find('li').remove();

@@ -10,7 +10,7 @@ mainApp.service('gdisk', ['Drive', function(Drive){
 
     // dummy folders
     var folders = [
-        {'id':'1','parent':'0','name':'Root','owner':'me','size':'','updateDate':'10.10.15', 'collapsed':true},
+        /*{'id':'1','parent':'0','name':'Root','owner':'me','size':'','updateDate':'10.10.15', 'collapsed':true},
         {'id':'2','parent':'1','name':'sub root','owner':'me','size':'','updateDate':'10.10.15', 'collapsed':true },
         {'id':'3','parent':'1','name':'sub root2','owner':'me','size':'','updateDate':'10.10.15', 'collapsed':true },
         {'id':'4','parent':'0','name':'Root 2', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
@@ -36,7 +36,7 @@ mainApp.service('gdisk', ['Drive', function(Drive){
         {'id':'24','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
         {'id':'25','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
         {'id':'26','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
-        {'id':'27','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true}
+        {'id':'27','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true}*/
     ];
 
     // selected folders on page
@@ -47,10 +47,10 @@ mainApp.service('gdisk', ['Drive', function(Drive){
 
     // dummy files
     var files = [
-        {'id':'1', 'folder':'1', 'name':'testFile.txt','owner':'me','size':'100K','updateDate':'10.10.15', 'isfile':true},
+        /*{'id':'1', 'folder':'1', 'name':'testFile.txt','owner':'me','size':'100K','updateDate':'10.10.15', 'isfile':true},
         {'id':'2', 'folder':'1', 'name':'testFile.txt','owner':'me','size':'100K','updateDate':'10.10.15', 'isfile':true},
         {'id':'3', 'folder':'2', 'name':'testFile.txt','owner':'me','size':'100K','updateDate':'10.10.15', 'isfile':true},
-        {'id':'4', 'folder':'3', 'name':'testFile.txt','owner':'me','size':'100K','updateDate':'10.10.15', 'isfile':true}
+        {'id':'4', 'folder':'3', 'name':'testFile.txt','owner':'me','size':'100K','updateDate':'10.10.15', 'isfile':true}*/
     ];
 
     /**
@@ -74,8 +74,6 @@ mainApp.service('gdisk', ['Drive', function(Drive){
     this.loadFiles = function(){
         return Drive.listFiles({'maxResults':2000}).then(function(resp){
 
-            var _folders = [];
-            var _files = [];
             var data = resp.items;
             for(var i in data) {
                 var item = {};
@@ -92,9 +90,13 @@ mainApp.service('gdisk', ['Drive', function(Drive){
                             item['iconLink'] = data[i]['iconLink'];
                             item['selected'] = false;
                         }
-                        _folders.push(item);
+
+                        if(!mObj.folder(item['id']) && item['id']){
+                            folders.push(item);
+                        }
+
                     }else{
-                        if(data[i]['parents'][0]){
+                        if(data[i]['parents'][0] && data[i]['id']){
                             item['id'] = data[i]['id'];
                             item['name'] = data[i]['title'];
                             item['owner'] = data[i]['ownerNames'].join(', ');
@@ -106,13 +108,14 @@ mainApp.service('gdisk', ['Drive', function(Drive){
                             item['iconLink'] = data[i]['iconLink'];
                             item['selected'] = false;
                         }
-                        _files.push(item);
+                        if(!mObj.file(item['id'])){
+                            files.push(item);
+                        }
                     }
                 }
 
             }
-            folders = _folders;
-            files = _files;
+
         });
     };
 
@@ -129,7 +132,7 @@ mainApp.service('gdisk', ['Drive', function(Drive){
 
         folder = folder || false;
         if(folder) folder = mObj.folder(folder);
-        else return [];
+        else return [{'id':'0','parent':'0','name':'Min enhet','owner':'me','size':'','updateDate':'', 'collapsed':true}];
 
         var _b = [];
         _b.push(folder);
@@ -168,6 +171,26 @@ mainApp.service('gdisk', ['Drive', function(Drive){
     };
 
     /**
+     * Return file by id
+     * @param fileId
+     * @returns {*}
+     */
+    this.file = function(fileId) {
+
+        fileId = fileId || false;
+
+        if(fileId) {
+            for(var _f in files) {
+                if(files[_f]['id'] == fileId){
+                    return files[_f];
+                }
+            }
+            return false;
+        }
+        return false;
+    };
+
+    /**
      * Return sub folders by parent
      * @param parent
      * @returns {*}
@@ -196,6 +219,7 @@ mainApp.service('gdisk', ['Drive', function(Drive){
     this.filesInFolder = function(folder) {
         folder = folder || false;
         var _files = [];
+
         if(folder) {
             for(var _f in files) {
                 if(files[_f]['folder'] == folder) {
@@ -204,6 +228,7 @@ mainApp.service('gdisk', ['Drive', function(Drive){
             }
             return _files.length > 0 ? _files : false;
         }else{
+
             for(var _f in files) {
                 if(files[_f]['folder'] == 0) {
                     _files.push(files[_f]);
@@ -264,34 +289,123 @@ mainApp.service('gdisk', ['Drive', function(Drive){
      */
     this.deleteSelected = function() {
 
+        var res;
         if(selectedFiles.length > 0){
             angular.forEach(selectedFiles, function(file, key) {
-                mObj.deleteFile(file);
+                res = mObj.deleteFile(file);
             });
         }
 
         if(selectedFolders.length > 0){
             angular.forEach(selectedFolders, function(folder, key) {
-                mObj.deleteFolder(folder);
+                res = mObj.deleteFolder(folder);
             });
         }
+        return res;
     };
 
+    /**
+     * Remove file via api and from selected list
+     * @param file
+     * @returns {*}
+     */
     this.deleteFile = function(file){
-        Drive.deleteFiles(file.id).then(function(resp){
+        return Drive.deleteFiles(file.id).then(function(resp){
             if(resp.status == 204){
-
                 // remove from selected
-                angular.forEach(selectedFiles, function(file, key) {
-                    mObj.deleteFile(file);
-                });
-
+                mObj.selectFile(file);
+                delete files[files.indexOf(file)];
             }
         });
     };
 
+    /**
+     * Remove folder via api and from list
+     * @param folder
+     */
     this.deleteFolder = function(folder){
-        console.log(folder);
+        return Drive.deleteFiles(folder['id']).then(function(resp){
+            if(resp.status == 204){
+                // remove from selected
+                mObj.selectFolder(folder);
+                delete folders[folders.indexOf(folder)];
+            }
+        });
     };
+
+    /**
+     * Create folder via api
+     * @param title
+     * @param parent
+     * @returns {*}
+     */
+    this.createFolder = function(title, parent){
+
+        parent = parent ? parent : false;
+
+        var f = {
+            'title': title,
+            'mimeType':'application/vnd.google-apps.folder'
+        };
+
+        if(parent){ f['parents'] = [ {'id' : parent} ]; }
+
+        return Drive.insertFiles(f).then(function(resp){
+
+            folders.push({'id': resp.id,
+                'parent':resp.parents[0]['id'],
+                'name':resp.title,
+                'owner': resp['ownerNames'].join(', '),
+                'size':'',
+                'updateDate': resp['modifiedDate'],
+                'collapsed':true,
+                'iconLink' : resp['iconLink']
+            });
+
+        });
+    };
+
+    /**
+     * Set folder as collapsed
+     * @param folderId
+     * @returns {boolean}
+     */
+    this.collapseFolder = function(folderId){
+
+        folderId = folderId || false;
+
+        if(folderId) {
+            for(var _f in folders) {
+                if(folders[_f]['id'] == folderId){
+                    folders[_f]['collapsed'] = true;
+                }
+            }
+            return false;
+        }
+        return false;
+
+    };
+
+    /**
+     * Set folder as expanded
+     * @param folderId
+     * @returns {boolean}
+     */
+    this.expandFolder = function(folderId){
+
+        folderId = folderId || false;
+
+        if(folderId) {
+            for(var _f in folders) {
+                if(folders[_f]['id'] == folderId){
+                    folders[_f]['collapsed'] = false;
+                }
+            }
+            return false;
+        }
+        return false;
+
+    }
+
 
 }]);

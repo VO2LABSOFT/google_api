@@ -1,8 +1,26 @@
 <div id="left">
 
-    <button id="skapa" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
-        SKAPA
-    </button>
+    <md-menu ng-controller="secondController as sctrl">
+        <md-button aria-label="Open phone interactions menu" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" ng-click="openMenu($mdOpenMenu, $event)">
+            SKAPA
+        </md-button>
+        <md-menu-content width="4">
+
+            <md-menu-item>
+                <md-button ng-click="skapa($event)"><md-icon md-menu-align-target>create_new_folder</md-icon>Mapp</md-button>
+            </md-menu-item>
+
+            <md-menu-divider></md-menu-divider>
+
+            <md-menu-item>
+                <md-button ng-click="ctrl.redial($event)"><md-icon md-menu-align-target>file_upload</md-icon>Ladda upp filer</md-button>
+            </md-menu-item>
+            <md-menu-item>
+                <md-button ng-click="ctrl.redial($event)"><md-icon md-menu-align-target>file_upload</md-icon>Hämtningsmapp</md-button>
+            </md-menu-item>
+
+        </md-menu-content>
+    </md-menu>
 
     <!-- folders tree -->
     <nav class="mdl-navigation">
@@ -11,7 +29,7 @@
 </div>
 
 <!-- Folders & files list -->
-<section id="right">
+<section id="right" ng-controller="fileslistController">
 
     <md-progress-linear md-mode="indeterminate" ng-class="{'hidden' : $parent.loaded}"></md-progress-linear>
 
@@ -27,7 +45,7 @@
     <div class="tablerow">
 
         <!-- folders -->
-        <div ng-repeat="folder in folders | orderBy:'name'" class="mdl-grid" id="{{folder.id}}" ng-click="selectFolder(folder)">
+        <div ng-repeat="folder in $parent.folders | orderBy:'name'" class="mdl-grid" id="{{folder.id}}" ng-click="selectFolder(folder)">
             <div class="mdl-cell mdl-cell--6-col">
                 <img ng-click="goto(folder.id)" ng-src="{{folder.iconLink}}" />
                 <span>{{folder.name}}</span></div>
@@ -37,7 +55,7 @@
         </div>
 
         <!-- files -->
-        <div ng-repeat="file in files | orderBy:'name'" class="mdl-grid" id="{{file.id}}" ng-click="selectFile(file)">
+        <div ng-repeat="file in $parent.files | orderBy:'name'" class="mdl-grid" id="{{file.id}}" ng-click="selectFile(file)">
             <div class="mdl-cell mdl-cell--6-col">
                 <img  ng-src="{{file.iconLink}}"  />
                 <span >{{file.name}}</span>

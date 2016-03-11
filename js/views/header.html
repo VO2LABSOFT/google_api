@@ -1,14 +1,15 @@
-<div class="mdl-layout__header-row">
+<div class="mdl-layout__header-row" ng-controller="fileslistController">
 
     <!-- Title -->
     <span class="mdl-layout-title"><strong>FILE MANAGER</strong></span>
     <div class="header-separator"></div>
 
     <!-- breadcrumbs -->
-    <nav class="mdl-navigation" ng-repeat="(key, value) in breadcrumbs">
-        <i ng-if="key" class="material-icons">keyboard_arrow_right</i>
-        <md-button ng-click="goto(value.id)">{{value.name}}</md-button>
-    </nav>
+        <nav class="mdl-navigation" ng-repeat="(key, value) in breadcrumbs">
+            <i ng-if="key" class="material-icons">keyboard_arrow_right</i>
+            <md-button ng-click="goto(value.id)">{{value.name}}</md-button>
+        </nav>
+
 
     <div class="mdl-layout-spacer"></div>
 
