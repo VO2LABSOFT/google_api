@@ -26,6 +26,8 @@ mainApp.service('gdisk', ['Drive', '$rootScope', function(Drive,$rootScope){
     // selected files on page
     var selectedFiles = [];
 
+    var selected = false;
+
     // dummy files
     var files = [
         /*{'id':'1', 'folder':'1', 'name':'testFile.txt','owner':'me','size':'100K','updateDate':'10.10.15', 'isfile':true},*/
@@ -67,7 +69,7 @@ mainApp.service('gdisk', ['Drive', '$rootScope', function(Drive,$rootScope){
                     fileSize = '-';
                 }
 
-                if(!data[i]['explicitlyTrashed']){
+                //if(!data[i]['explicitlyTrashed']){
                     if(data[i]['mimeType']=='application/vnd.google-apps.folder'){
                         if(data[i]['parents'][0]){
 
@@ -80,7 +82,10 @@ mainApp.service('gdisk', ['Drive', '$rootScope', function(Drive,$rootScope){
                             item['iconLink'] = data[i]['iconLink'];
                             item['selected'] = false;
                             item['size'] = fileSize;
+                            item['link'] = data[i]['alternateLink'];
                         }
+
+                        if(data[i]['explicitlyTrashed']) item.parent = 'trash';
 
                         if(!mObj.folder(item['id']) && item['id']){
                             folders.push(item);
@@ -99,13 +104,14 @@ mainApp.service('gdisk', ['Drive', '$rootScope', function(Drive,$rootScope){
                             item['size'] = fileSize;
                             item['iconLink'] = data[i]['iconLink'];
                             item['selected'] = false;
+                            item['link'] = data[i]['alternateLink'];
                         }
                         if(!mObj.file(item['id'])){
+                            if(data[i]['explicitlyTrashed']) item.folder = 'trash';
                             files.push(item);
                         }
                     }
-                }
-
+                //}
             }
 
         });
@@ -255,12 +261,20 @@ mainApp.service('gdisk', ['Drive', '$rootScope', function(Drive,$rootScope){
      * @param folder
      */
     this.selectFolder = function(folder) {
-        if(selectedFolders.indexOf(folder) == -1){
-            selectedFolders.push(folder);
-        } else {
-            delete(selectedFolders[selectedFolders.indexOf(folder)]);
-            selectedFolders.length--;
+
+        folder = folder ? folder : false;
+
+        selectedFolders = [];
+
+        if(!folder){
+            $rootScope.showItemMenu = false;
+            return true;
         }
+
+        selectedFolders.push(folder);
+        mObj.selected = folder;
+        $rootScope.showItemMenu = selectedFolders.length > 0;
+
     };
 
     /**
@@ -268,12 +282,18 @@ mainApp.service('gdisk', ['Drive', '$rootScope', function(Drive,$rootScope){
      * @param file
      */
     this.selectFile = function(file) {
-        if(selectedFiles.indexOf(file) == -1){
-            selectedFiles.push(file);
-        } else {
-            delete(selectedFiles[selectedFiles.indexOf(file)]);
-            selectedFiles.length--;
+
+        file = file ? file : false;
+
+        selectedFiles = [];
+
+        if(!file){
+            $rootScope.showItemMenu = false;
+            return true;
         }
+        selectedFiles.push(file);
+        mObj.selected = file;
+        $rootScope.showItemMenu = selectedFiles.length > 0;
     };
 
     /**

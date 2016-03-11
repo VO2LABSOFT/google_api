@@ -7,9 +7,13 @@ mainApp.controller('fileslistController', ['$scope', '$rootScope', 'gdisk', '$md
 
             this.name = 'fileslistController';
 
-            var scope = $rootScope;
+            var scope = $scope;
 
             var mObj = this;
+
+            var originatorEv;
+
+            scope.selected = gdisk.selected;
 
             /**
              * Navigate to folder
@@ -24,28 +28,63 @@ mainApp.controller('fileslistController', ['$scope', '$rootScope', 'gdisk', '$md
 
                 if(folder){
                     var parent = angular.element(event.target).parent();
+
                     if(parent.hasClass('mdl-grid')){
+
                         if(parent.hasClass('selected')){
-                            angular.element(event.target).parent().removeClass('selected');
+                            angular.element(parent.parent().children()).removeClass('selected'); // remove all selections
+                            gdisk.selectFolder();
                         }else{
-                            angular.element(event.target).parent().addClass('selected');
+                            angular.element(parent.parent().children()).removeClass('selected'); // remove all selections
+                            parent.addClass('selected');
+                            gdisk.selectFolder(folder);
                         }
-                        gdisk.selectFolder(folder);
+
                     }
                 }
+
                 return false;
+            };
+
+            $scope.showLink = function(ev) {
+
+                originatorEv = ev;
+
+                $mdDialog.show(
+                    {
+                        controller: 'fileslistController',
+                        templateUrl: '/js/views/dialogs/link.html',
+                        parent: angular.element(document.body),
+                        targetEvent: originatorEv,
+                        clickOutsideToClose:true,
+                        fullscreen: false
+                    }
+                );
+
+                $scope.itemlink = "sdjalsjdalsjdlajdlasjda" ;
+
+                originatorEv = null;
+            };
+
+            $scope.closeLink = function(){
+                $mdDialog.cancel();
             };
 
             $scope.selectFile = function(file){
                 if(file){
                     var parent = angular.element(event.target).parent();
+
                     if(parent.hasClass('mdl-grid')){
+
                         if(parent.hasClass('selected')){
-                            angular.element(event.target).parent().removeClass('selected');
+                            angular.element(parent.parent().children()).removeClass('selected'); // remove all selections
+                            gdisk.selectFile();
                         }else{
-                            angular.element(event.target).parent().addClass('selected');
+                            angular.element(parent.parent().children()).removeClass('selected'); // remove all selections
+                            parent.addClass('selected');
+                            gdisk.selectFile(file);
                         }
-                        gdisk.selectFile(file);
+
                     }
                 }
                 return false;
@@ -63,6 +102,35 @@ mainApp.controller('fileslistController', ['$scope', '$rootScope', 'gdisk', '$md
                 });
             };
 
+            $scope.showcontext = function(ev){
+                originatorEv = ev;
+
+                $mdDialog.show(
+                    {
+                        controller: 'fileslistController',
+                        templateUrl: '/js/views/dialogs/context.html',
+                        parent: angular.element(document.body),
+                        targetEvent: originatorEv,
+                        clickOutsideToClose:true,
+                        fullscreen: false
+                    }
+                );
+
+                originatorEv = null;
+            }
+
+        }]
+);
+
+
+mainApp.controller('contextcontroller', ['$scope', '$rootScope', 'gdisk', '$mdDialog', '$mdToast',
+        function($scope, $rootScope, gdisk, $mdDialog, $mdToast) {
+
+            this.name = 'fileslistController';
+
+            $scope.contextClicked = function(){
+                console.log('contextClicked');
+            }
 
         }]
 );

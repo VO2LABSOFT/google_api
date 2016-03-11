@@ -30,9 +30,9 @@
     <div class="mdl-layout-spacer"></div>
 
     <!-- Navigation -->
-    <nav class="mdl-navigation" ng-controller="fileslistController">
+    <nav class="mdl-navigation"  ng-class="{'hidden' : !showItemMenu}"  ng-controller="fileslistController">
         <button class="mdl-button mdl-js-button mdl-button--icon" data-upgraded=",MaterialButton">
-            <i class="material-icons">link</i>
+            <i class="material-icons" ng-click="showLink($event)">link</i>
         </button>
         <button class="mdl-button mdl-js-button mdl-button--icon" data-upgraded=",MaterialButton">
             <i class="material-icons">person_add</i>
@@ -40,21 +40,21 @@
         <button class="mdl-button mdl-js-button mdl-button--icon" data-upgraded=",MaterialButton">
             <i class="material-icons" ng-click="deleteSelected()">delete</i>
         </button>
+
+        <md-menu ng-if="!folder.fid" ng-controller="secondController">
+            <md-button ng-click="openMenu($mdOpenMenu, $event)"><md-icon md-menu-align-target>more_vert</md-icon></md-button>
+            <md-menu-content width="4">
+                <md-menu-item>
+                    <md-button ng-click="skapa($event)"><md-icon md-menu-align-target>create_new_folder</md-icon>Move</md-button>
+                </md-menu-item>
+                <md-menu-item>
+                    <md-button ng-click="ctrl.redial($event)"><md-icon md-menu-align-target>file_upload</md-icon>Rename</md-button>
+                </md-menu-item>
+            </md-menu-content>
+        </md-menu>
+
     </nav>
 
-    <!-- Right aligned menu below button -->
-    <button id="info-menu-lower-right"
-            class="mdl-button mdl-js-button mdl-button--icon">
-        <i class="material-icons">more_vert</i>
-    </button>
-
-    <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
-        for="info-menu-lower-right">
-        <li class="mdl-menu__item">Some Action</li>
-        <li class="mdl-menu__item">Another Action</li>
-        <li disabled class="mdl-menu__item">Disabled Action</li>
-        <li class="mdl-menu__item">Yet Another Action</li>
-    </ul>
 
     <div class="vertical-separator"></div>
 

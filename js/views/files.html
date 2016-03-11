@@ -26,6 +26,22 @@
     <nav class="mdl-navigation">
         <ul folders-tree class="root" tree="{{tree}}"></ul>
     </nav>
+
+
+    <!-- folders tree -->
+    <nav class="mdl-navigation" ng-controller="fileslistController as sctrl">
+        <ul class="root">
+            <li>
+                <a class="mdl-navigation__link">
+
+                    <span class="mdl-button mdl-js-button mdl-button--icon" data-upgraded=",MaterialButton">
+                        <i class="material-icons" ng-click="goto('trash');">delete</i>
+                    </span>papperskorgen
+                </a>
+            </li>
+        </ul>
+    </nav>
+
 </div>
 
 <!-- Folders & files list -->
@@ -35,34 +51,64 @@
 
     <div class="tableheader">
         <div class="mdl-grid">
-            <div class="mdl-cell mdl-cell--6-col">Namn</div>
+            <div class="mdl-cell mdl-cell--4-col">Namn</div>
             <div class="mdl-cell mdl-cell--2-col">Ägare</div>
             <div class="mdl-cell mdl-cell--2-col">Senast ändrad</div>
             <div class="mdl-cell mdl-cell--2-col">Filstorlek</div>
+            <div class="mdl-cell mdl-cell--2-col"></div>
         </div>
     </div>
 
     <div class="tablerow">
 
         <!-- folders -->
-        <div ng-repeat="folder in $parent.folders | orderBy:'name'" class="mdl-grid" id="{{folder.id}}" ng-click="selectFolder(folder)">
-            <div class="mdl-cell mdl-cell--6-col">
+        <div ng-repeat="folder in $parent.folders | orderBy:'name'" class="mdl-grid" id="{{folder.id}}"  ng-click="selectFolder(folder)">
+            <div class="mdl-cell mdl-cell--4-col">
                 <img ng-click="goto(folder.id)" ng-src="{{folder.iconLink}}" />
                 <span>{{folder.name}}</span></div>
             <div class="mdl-cell mdl-cell--2-col">{{folder.owner}}</div>
             <div class="mdl-cell mdl-cell--2-col">{{folder.updateDate}}</div>
             <div class="mdl-cell mdl-cell--2-col">{{folder.size}}</div>
+
+            <div class="mdl-cell mdl-cell--2-col">
+
+                <!--<md-menu ng-controller="contextcontroller as cntx">
+                    <md-button ng-click="$mdOpenMenu($event)" class="md-icon-button">
+                        <md-icon>list</md-icon>
+                    </md-button>
+                    <md-menu-content>
+                        <md-menu-item><md-button ng-click="doSomething()">Do Something</md-button></md-menu-item>
+                    </md-menu-content>
+                </md-menu>-->
+
+            </div>
+
         </div>
 
         <!-- files -->
-        <div ng-repeat="file in $parent.files | orderBy:'name'" class="mdl-grid" id="{{file.id}}" ng-click="selectFile(file)">
-            <div class="mdl-cell mdl-cell--6-col">
+        <div ng-repeat="file in $parent.files | orderBy:'name'" class="mdl-grid" id="{{file.id}}"  ng-click="selectFile(file)">
+            <div class="mdl-cell mdl-cell--4-col">
                 <img  ng-src="{{file.iconLink}}"  />
                 <span >{{file.name}}</span>
             </div>
             <div class="mdl-cell mdl-cell--2-col">{{file.owner}}</div>
             <div class="mdl-cell mdl-cell--2-col">{{file.updateDate}}</div>
             <div class="mdl-cell mdl-cell--2-col">{{file.size}}</div>
+
+            <div class="mdl-cell mdl-cell--2-col">
+
+                <!-- <md-menu ng-controller="contextcontroller as cntx">
+                    <md-button ng-click="$mdOpenMenu($event)" class="md-icon-button">
+                        <md-icon>list</md-icon>
+                    </md-button>
+                    <md-menu-content>
+                        <md-menu-item><md-button ng-click="doSomething()">Do Something</md-button></md-menu-item>
+                    </md-menu-content>
+                </md-menu>
+                -->
+
+            </div>
+
         </div>
 
     </div>
