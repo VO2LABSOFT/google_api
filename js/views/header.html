@@ -5,16 +5,32 @@
     <div class="header-separator"></div>
 
     <!-- breadcrumbs -->
-        <nav class="mdl-navigation" ng-repeat="(key, value) in breadcrumbs">
-            <i ng-if="key" class="material-icons">keyboard_arrow_right</i>
-            <md-button ng-click="goto(value.id)">{{value.name}}</md-button>
-        </nav>
+    <md-menu ng-if="!folder.fid" ng-controller="secondController">
+        <md-button aria-label="" ng-click="openMenu($mdOpenMenu, $event)">Min enhet</md-button>
+        <md-menu-content width="4">
+            <md-menu-item>
+                <md-button ng-click="skapa($event)"><md-icon md-menu-align-target>create_new_folder</md-icon>Mapp</md-button>
+            </md-menu-item>
+            <md-menu-divider></md-menu-divider>
+            <md-menu-item>
+                <md-button ng-click="ctrl.redial($event)"><md-icon md-menu-align-target>file_upload</md-icon>Ladda upp filer</md-button>
+            </md-menu-item>
+            <md-menu-item>
+                <md-button ng-click="ctrl.redial($event)"><md-icon md-menu-align-target>file_upload</md-icon>Hämtningsmapp</md-button>
+            </md-menu-item>
+        </md-menu-content>
+    </md-menu>
+
+    <nav ng-if="folder.fid" ng-controller="secondController" class="mdl-navigation" ng-repeat="(key, value) in breadcrumbs">
+        <i ng-if="key" class="material-icons">keyboard_arrow_right</i>
+        <md-button ng-click="goto(value.id)">{{value.name}}</md-button>
+    </nav>
 
 
     <div class="mdl-layout-spacer"></div>
 
     <!-- Navigation -->
-    <nav class="mdl-navigation">
+    <nav class="mdl-navigation" ng-controller="fileslistController">
         <button class="mdl-button mdl-js-button mdl-button--icon" data-upgraded=",MaterialButton">
             <i class="material-icons">link</i>
         </button>

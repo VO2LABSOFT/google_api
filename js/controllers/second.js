@@ -59,6 +59,8 @@ mainApp.controller('secondController', ['$scope', '$rootScope', 'gdisk', '$mdDia
 
                     $rootScope.folders = gdisk.subFolders($rootScope.folder.fid);
 
+                    console.log(res);
+
                     $rootScope.loaded = true;
                     $mdToast.show(toast);
 

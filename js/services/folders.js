@@ -1,7 +1,14 @@
 
 'use strict';
 
-mainApp.service('gdisk', ['Drive', function(Drive){
+mainApp.service('gdisk', ['Drive', '$rootScope', function(Drive,$rootScope){
+
+    Date.prototype.yyyymmdd = function() {
+        var yyyy = this.getFullYear().toString();
+        var mm = (this.getMonth()+1).toString(); // getMonth() is zero-based
+        var dd  = this.getDate().toString();
+        return (dd[1]?dd:"0"+dd[0])+'.'+(mm[1]?mm:"0"+mm[0])+'.'+yyyy; // padding
+    };
 
     /**
      * Link to scope
@@ -10,33 +17,7 @@ mainApp.service('gdisk', ['Drive', function(Drive){
 
     // dummy folders
     var folders = [
-        /*{'id':'1','parent':'0','name':'Root','owner':'me','size':'','updateDate':'10.10.15', 'collapsed':true},
-        {'id':'2','parent':'1','name':'sub root','owner':'me','size':'','updateDate':'10.10.15', 'collapsed':true },
-        {'id':'3','parent':'1','name':'sub root2','owner':'me','size':'','updateDate':'10.10.15', 'collapsed':true },
-        {'id':'4','parent':'0','name':'Root 2', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
-        {'id':'5','parent':'4','name':'2 sub root','owner':'me','size':'','updateDate':'10.10.15', 'collapsed':true},
-        {'id':'6','parent':'4','name':'2 sub root2', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
-        {'id':'7','parent':'4','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
-        {'id':'8','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
-        {'id':'9','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
-        {'id':'10','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
-        {'id':'11','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
-        {'id':'12','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
-        {'id':'13','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
-        {'id':'14','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
-        {'id':'15','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
-        {'id':'16','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
-        {'id':'17','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
-        {'id':'18','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
-        {'id':'19','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
-        {'id':'20','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
-        {'id':'21','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
-        {'id':'22','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
-        {'id':'23','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
-        {'id':'24','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
-        {'id':'25','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
-        {'id':'26','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true},
-        {'id':'27','parent':'7','name':'Else One!!!', 'owner': 'me', 'size': '', 'updateDate': '10.10.15', 'collapsed':true}*/
+        /*{'id':'1','parent':'0','name':'Root','owner':'me','size':'','updateDate':'10.10.15', 'collapsed':true},*/
     ];
 
     // selected folders on page
@@ -47,10 +28,7 @@ mainApp.service('gdisk', ['Drive', function(Drive){
 
     // dummy files
     var files = [
-        /*{'id':'1', 'folder':'1', 'name':'testFile.txt','owner':'me','size':'100K','updateDate':'10.10.15', 'isfile':true},
-        {'id':'2', 'folder':'1', 'name':'testFile.txt','owner':'me','size':'100K','updateDate':'10.10.15', 'isfile':true},
-        {'id':'3', 'folder':'2', 'name':'testFile.txt','owner':'me','size':'100K','updateDate':'10.10.15', 'isfile':true},
-        {'id':'4', 'folder':'3', 'name':'testFile.txt','owner':'me','size':'100K','updateDate':'10.10.15', 'isfile':true}*/
+        /*{'id':'1', 'folder':'1', 'name':'testFile.txt','owner':'me','size':'100K','updateDate':'10.10.15', 'isfile':true},*/
     ];
 
     /**
@@ -78,17 +56,30 @@ mainApp.service('gdisk', ['Drive', function(Drive){
             for(var i in data) {
                 var item = {};
 
+                var fileSize = data[i]['fileSize'];
+                if(data[i]['fileSize']){
+
+                    if(fileSize > 1 && fileSize < 1000){ fileSize += 'B'; }
+                    if(fileSize > 1000 && fileSize < 1000000){ fileSize=fileSize/1000; fileSize = parseFloat(fileSize).toFixed(2); fileSize += 'Kb'; }
+                    if(fileSize > 1000000){fileSize=fileSize/1000000; fileSize = parseFloat(fileSize).toFixed(2); fileSize += 'Mb'; }
+
+                }else{
+                    fileSize = '-';
+                }
+
                 if(!data[i]['explicitlyTrashed']){
                     if(data[i]['mimeType']=='application/vnd.google-apps.folder'){
                         if(data[i]['parents'][0]){
+
                             item['id'] = data[i]['id'];
                             item['name'] = data[i]['title'];
                             item['owner'] = data[i]['ownerNames'].join(', ');
-                            item['updateDate'] = data[i]['modifiedDate'];
+                            item['updateDate'] = (new Date(data[i]['modifiedDate'])).yyyymmdd();
                             item['collapsed'] = true;
                             item['parent'] = data[i]['parents'][0]['isRoot'] ? 0 : data[i]['parents'][0]['id'] ;
                             item['iconLink'] = data[i]['iconLink'];
                             item['selected'] = false;
+                            item['size'] = fileSize;
                         }
 
                         if(!mObj.folder(item['id']) && item['id']){
@@ -97,14 +88,15 @@ mainApp.service('gdisk', ['Drive', function(Drive){
 
                     }else{
                         if(data[i]['parents'][0] && data[i]['id']){
+
                             item['id'] = data[i]['id'];
                             item['name'] = data[i]['title'];
                             item['owner'] = data[i]['ownerNames'].join(', ');
-                            item['updateDate'] = data[i]['modifiedDate'];
+                            item['updateDate'] = (new Date(data[i]['modifiedDate'])).yyyymmdd();
                             item['collapsed'] = true;
                             item['folder'] = data[i]['parents'][0]['isRoot'] ? 0 : data[i]['parents'][0]['id'] ;
                             item['isfile'] = true;
-                            item['size'] = data[i]['fileSize'];
+                            item['size'] = fileSize;
                             item['iconLink'] = data[i]['iconLink'];
                             item['selected'] = false;
                         }
@@ -290,15 +282,19 @@ mainApp.service('gdisk', ['Drive', function(Drive){
     this.deleteSelected = function() {
 
         var res;
-        if(selectedFiles.length > 0){
+        if(selectedFiles.length > 0) {
             angular.forEach(selectedFiles, function(file, key) {
-                res = mObj.deleteFile(file);
+                res = mObj.deleteFile(file).then(function(){
+                    $rootScope.files = mObj.filesInFolder($rootScope.folder.fid);
+                });
             });
         }
 
-        if(selectedFolders.length > 0){
+        if(selectedFolders.length > 0) {
             angular.forEach(selectedFolders, function(folder, key) {
-                res = mObj.deleteFolder(folder);
+                res = mObj.deleteFolder(folder).then(function(){
+                    $rootScope.folders = mObj.subFolders($rootScope.folder.fid);
+                });
             });
         }
         return res;
@@ -316,6 +312,7 @@ mainApp.service('gdisk', ['Drive', function(Drive){
                 mObj.selectFile(file);
                 delete files[files.indexOf(file)];
             }
+            return true;
         });
     };
 
@@ -329,6 +326,7 @@ mainApp.service('gdisk', ['Drive', function(Drive){
                 // remove from selected
                 mObj.selectFolder(folder);
                 delete folders[folders.indexOf(folder)];
+                return true;
             }
         });
     };
@@ -341,7 +339,7 @@ mainApp.service('gdisk', ['Drive', function(Drive){
      */
     this.createFolder = function(title, parent){
 
-        parent = parent ? parent : false;
+        parent = parent ? parent : 0;
 
         var f = {
             'title': title,
@@ -353,14 +351,16 @@ mainApp.service('gdisk', ['Drive', function(Drive){
         return Drive.insertFiles(f).then(function(resp){
 
             folders.push({'id': resp.id,
-                'parent':resp.parents[0]['id'],
+                'parent':parent,
                 'name':resp.title,
                 'owner': resp['ownerNames'].join(', '),
-                'size':'',
-                'updateDate': resp['modifiedDate'],
+                'size':'-',
+                'updateDate': (new Date(resp['modifiedDate'])).yyyymmdd(),
                 'collapsed':true,
                 'iconLink' : resp['iconLink']
             });
+
+            return mObj.subFolders(parent);
 
         });
     };

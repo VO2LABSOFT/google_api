@@ -58,9 +58,6 @@ mainApp.controller('fileslistController', ['$scope', '$rootScope', 'gdisk', '$md
                         .content('Deleted')
                         .position('bottom right');
 
-                    $rootScope.folders = gdisk.subFolders($rootScope.folder.fid);
-                    $rootScope.files = gdisk.filesInFolder($rootScope.folder.fid);
-
                     $rootScope.loaded = true;
                     $mdToast.show(toast);
                 });
