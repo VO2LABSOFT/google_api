@@ -262,6 +262,8 @@ mainApp.service('gdisk', ['Drive', '$rootScope', function(Drive,$rootScope){
      */
     this.selectFolder = function(folder) {
 
+        $rootScope.showItemMenu = true;
+
         folder = folder ? folder : false;
 
         selectedFolders = [];
@@ -273,7 +275,7 @@ mainApp.service('gdisk', ['Drive', '$rootScope', function(Drive,$rootScope){
 
         selectedFolders.push(folder);
         mObj.selected = folder;
-        $rootScope.showItemMenu = selectedFolders.length > 0;
+        //$rootScope.showItemMenu = selectedFolders.length > 0;
 
     };
 
@@ -282,6 +284,8 @@ mainApp.service('gdisk', ['Drive', '$rootScope', function(Drive,$rootScope){
      * @param file
      */
     this.selectFile = function(file) {
+
+        $rootScope.showItemMenu = true;
 
         file = file ? file : false;
 
@@ -293,7 +297,7 @@ mainApp.service('gdisk', ['Drive', '$rootScope', function(Drive,$rootScope){
         }
         selectedFiles.push(file);
         mObj.selected = file;
-        $rootScope.showItemMenu = selectedFiles.length > 0;
+        //$rootScope.showItemMenu = selectedFiles.length > 0;
     };
 
     /**
@@ -326,11 +330,12 @@ mainApp.service('gdisk', ['Drive', '$rootScope', function(Drive,$rootScope){
      * @returns {*}
      */
     this.deleteFile = function(file){
-        return Drive.deleteFiles(file.id).then(function(resp){
+        return Drive.trashFile(file.id).then(function(resp){
             if(resp.status == 204){
                 // remove from selected
                 mObj.selectFile(file);
-                delete files[files.indexOf(file)];
+                //delete files[files.indexOf(file)];
+                files[files.indexOf(file)]['folder'] = 'trash';
             }
             return true;
         });
@@ -341,11 +346,12 @@ mainApp.service('gdisk', ['Drive', '$rootScope', function(Drive,$rootScope){
      * @param folder
      */
     this.deleteFolder = function(folder){
-        return Drive.deleteFiles(folder['id']).then(function(resp){
+        return Drive.trashFile(folder['id']).then(function(resp){
             if(resp.status == 204){
                 // remove from selected
                 mObj.selectFolder(folder);
-                delete folders[folders.indexOf(folder)];
+                folders[folders.indexOf(folder)]['parent'] = 'trash';
+                console.log(folders[folders.indexOf(folder)]);
                 return true;
             }
         });

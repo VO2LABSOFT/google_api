@@ -121,16 +121,3 @@ mainApp.controller('fileslistController', ['$scope', '$rootScope', 'gdisk', '$md
 
         }]
 );
-
-
-mainApp.controller('contextcontroller', ['$scope', '$rootScope', 'gdisk', '$mdDialog', '$mdToast',
-        function($scope, $rootScope, gdisk, $mdDialog, $mdToast) {
-
-            this.name = 'fileslistController';
-
-            $scope.contextClicked = function(){
-                console.log('contextClicked');
-            }
-
-        }]
-);

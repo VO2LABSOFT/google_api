@@ -5,7 +5,7 @@
     <div class="header-separator"></div>
 
     <!-- breadcrumbs -->
-    <md-menu ng-if="!folder.fid" ng-controller="secondController">
+    <md-menu ng-if="isRoot" ng-controller="secondController">
         <md-button aria-label="" ng-click="openMenu($mdOpenMenu, $event)">Min enhet</md-button>
         <md-menu-content width="4">
             <md-menu-item>
@@ -21,16 +21,20 @@
         </md-menu-content>
     </md-menu>
 
-    <nav ng-if="folder.fid" ng-controller="secondController" class="mdl-navigation" ng-repeat="(key, value) in breadcrumbs">
+    <nav ng-if="isFolder" ng-controller="secondController" class="mdl-navigation" ng-repeat="(key, value) in breadcrumbs">
         <i ng-if="key" class="material-icons">keyboard_arrow_right</i>
         <md-button ng-click="goto(value.id)">{{value.name}}</md-button>
     </nav>
 
+    <nav ng-if="isTrash" ng-controller="secondController" class="mdl-navigation">
+        <i ng-if="key" class="material-icons">keyboard_arrow_right</i>
+        <md-button>Trash</md-button>
+    </nav>
 
     <div class="mdl-layout-spacer"></div>
 
     <!-- Navigation -->
-    <nav class="mdl-navigation"  ng-class="{'hidden' : !showItemMenu}"  ng-controller="fileslistController">
+    <nav class="mdl-navigation"  ng-controller="fileslistController">
         <button class="mdl-button mdl-js-button mdl-button--icon" data-upgraded=",MaterialButton">
             <i class="material-icons" ng-click="showLink($event)">link</i>
         </button>
@@ -41,7 +45,7 @@
             <i class="material-icons" ng-click="deleteSelected()">delete</i>
         </button>
 
-        <md-menu ng-if="!folder.fid" ng-controller="secondController">
+        <md-menu ng-controller="secondController">
             <md-button ng-click="openMenu($mdOpenMenu, $event)"><md-icon md-menu-align-target>more_vert</md-icon></md-button>
             <md-menu-content width="4">
                 <md-menu-item>

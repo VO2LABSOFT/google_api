@@ -10,6 +10,12 @@ mainApp.controller('secondController', ['$scope', '$rootScope', 'gdisk', '$mdDia
             var scope = $rootScope;
 
             var mObj = this;
+            console.log($rootScope.folder.fid);
+            $rootScope.isFolder = ($rootScope.folder.fid !== '' && $rootScope.folder.fid !== '0' && $rootScope.folder.fid != 'trash');
+
+            $rootScope.isRoot = $rootScope.folder.fid === '0';
+
+            $rootScope.isTrash = $rootScope.folder.fid === 'trash';
 
             var originatorEv;
             $scope.openMenu = function($mdOpenMenu, ev) {
@@ -67,6 +73,7 @@ mainApp.controller('secondController', ['$scope', '$rootScope', 'gdisk', '$mdDia
                 });
 
             };
+
 
         }]
 );

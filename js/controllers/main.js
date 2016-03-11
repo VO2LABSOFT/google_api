@@ -30,6 +30,7 @@ mainApp.controller('MainController', ['$scope', '$rootScope', '$http', '$routePa
         $rootScope.files = this.files = []; // files in current folder
         //scope.tree = this.tree = scope.tree ? scope.tree : []; // empty tree
         $rootScope.breadcrumbs = this.breadcrumbs = gdisk.breadcrumbs($rootScope.folder.fid); // breadcrumbs to current folder
+        $rootScope.showItemMenu = true;
 
         /**
          * Load files from api and render
