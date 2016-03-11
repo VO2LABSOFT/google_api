@@ -23,12 +23,12 @@
     </md-menu>
 
     <!-- folders tree -->
-    <nav class="mdl-navigation">
+    <nav class="mdl-navigation" style="height: 400px; overflow-y: scroll; margin-top: 10px;">
         <ul folders-tree class="root" tree="{{tree}}"></ul>
     </nav>
 
     <!-- trash link -->
-    <nav class="mdl-navigation" ng-controller="fileslistController as sctrl">
+    <nav class="mdl-navigation" ng-controller="fileslistController as sctrl" style="margin-top: 50px; margin-left: 20px;">
         <ul class="root">
             <li>
                 <a class="mdl-navigation__link">
