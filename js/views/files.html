@@ -142,7 +142,7 @@
 
 
 
-        <div style="position: relative;" ng-controller="ContextController" ng-repeat="folder in folders | orderBy:order" class="mdl-grid" id="{{folder.id}}"  ng-click="selectFolder(folder)" ng-right-click="itemContext($event)">
+        <div ng-controller="ContextController" ng-repeat="folder in folders | orderBy:order" class="mdl-grid" id="{{folder.id}}"  ng-click="selectFolder(folder)" ng-right-click="itemContext($event,folder)">
 
             <div class="mdl-cell mdl-cell--6-col">
                 <img ng-click="goto(folder.id)" ng-src="{{folder.iconLink}}" />
@@ -152,18 +152,16 @@
             <div class="mdl-cell mdl-cell--2-col">{{folder.size}}</div>
 
             <md-menu-content class="context" style="display: none;">
-                <md-menu-item><md-button ng-click="doSomething()"><md-icon md-menu-align-target>create_new_folder</md-icon>Create</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="doSomething()"><md-icon md-menu-align-target>link</md-icon>Link</md-button></md-menu-item>
+                <md-menu-item><md-button ng-click="showLinkContext(folder)"><md-icon md-menu-align-target>link</md-icon>Link</md-button></md-menu-item>
                 <md-menu-item><md-button ng-click="doSomething()"><md-icon md-menu-align-target>move_to_inbox</md-icon>Move</md-button></md-menu-item>
                 <md-menu-item><md-button ng-click="doSomething()"><md-icon md-menu-align-target>mode_edit</md-icon>Rename</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="doSomething()"><md-icon md-menu-align-target>file_download</md-icon>Download</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="doSomething()"><md-icon md-menu-align-target>delete</md-icon>Remove</md-button></md-menu-item>
+                <md-menu-item><md-button ng-click="deleteFolderContext(folder)"><md-icon md-menu-align-target>delete</md-icon>Remove</md-button></md-menu-item>
             </md-menu-content>
 
         </div>
 
 
-        <div ng-repeat="file in files | orderBy:order" class="mdl-grid" id="{{file.id}}"  ng-click="selectFile(file)">
+        <div ng-controller="ContextController" ng-repeat="file in files | orderBy:order" class="mdl-grid" id="{{file.id}}"  ng-click="selectFile(file)" ng-right-click="itemContext($event,file)">
             <div class="mdl-cell mdl-cell--6-col">
                 <img  ng-src="{{file.iconLink}}"  />
                 <span >{{file.name}}</span>
@@ -172,6 +170,13 @@
             <div class="mdl-cell mdl-cell--2-col">{{file.updateDate}}</div>
             <div class="mdl-cell mdl-cell--2-col">{{file.size}}</div>
 
+            <md-menu-content class="context" style="display: none;">
+                <md-menu-item><md-button ng-click="showLinkContext(folder)"><md-icon md-menu-align-target>link</md-icon>Link</md-button></md-menu-item>
+                <md-menu-item><md-button ng-click="doSomething()"><md-icon md-menu-align-target>move_to_inbox</md-icon>Move</md-button></md-menu-item>
+                <md-menu-item><md-button ng-click="doSomething()"><md-icon md-menu-align-target>mode_edit</md-icon>Rename</md-button></md-menu-item>
+                <md-menu-item><md-button ng-click="downloadFolderContext(folder)"><md-icon md-menu-align-target>file_download</md-icon>Download</md-button></md-menu-item>
+                <md-menu-item><md-button ng-click="deleteFolderContext(folder)"><md-icon md-menu-align-target>delete</md-icon>Remove</md-button></md-menu-item>
+            </md-menu-content>
 
         </div>
 

@@ -9,53 +9,45 @@ mainApp.controller('ContextController', ['$scope', '$rootScope', 'gdisk', '$mdDi
 
             this.name = 'TreeController';
 
-            $scope.itemContext = function($event){
+            $scope.itemContext = function($event, item){
 
-                if(angular.element($event.target).hasClass('mdl-grid')){
-                    var parent = angular.element($event.target);
-                    var cmenu = parent.find('md-menu-content');
+                var parent = $($event.target).closest('.mdl-grid');
+                var cmenu = $(parent).find('md-menu-content');
+
+                // hide previous open context
+                $(parent).closest('.tablerow').find('md-menu-content').css('display','none');
+
+                if(!item.folder && item.folder !== 0){
+                    if( !$scope.selectFolder(item) ) return;
+                }else{
+                    if( !$scope.selectFile(item) ) return;
                 }
 
-                if(angular.element($event.target).hasClass('mdl-cell')){
-                    var parent = angular.element($event.target).parent();
-                    var cmenu = parent.find('md-menu-content');
+                $(cmenu).css('display','block');
+                $(cmenu).css('position','absolute');
+                $(cmenu).css('z-index','100000');
+                $(cmenu).css('outline','none');
+
+                var top = $($event)[0]['layerY'] + $(parent).parent().scrollTop();
+
+                if( top+$(cmenu).height()+200 >= $(parent).parent()[0].scrollHeight ){
+                    top=top-$(cmenu).height();
                 }
 
-                angular.element(parent.parent()).find('md-menu-content').css('display','none');
-                //angular.element(window.document).find('div.mdl-grid').removeClass('selected');
-                angular.element(parent.parent()).find('.mdl-grid').removeClass('selected');
+                $(cmenu).css( 'left', angular.element($event)[0]['layerX']+'px');
+                $(cmenu).css( 'top', top);
+            };
 
-                //console.log(angular.element(parent.parent()).parent().find('.mdl-grid'));
+            $scope.showLinkContext = function(item){
+                $scope.showLink();
+            };
 
-                angular.element(parent).addClass('selected');
+            $scope.deleteFolderContext = function(folder){
+                $scope.deleteSelected();
+            };
 
-                angular.element(cmenu).css('display','block');
-                angular.element(cmenu).css('position','absolute');
-                angular.element(cmenu).css('z-index','100000');
-                angular.element(cmenu).css('outline','none');
-                angular.element(cmenu).css( 'left', angular.element($event)[0]['layerX']+'px');
-                angular.element(cmenu).css( 'top', angular.element($event)[0]['layerY']+'px');
-            }
-
-        }]
-);
-
-
-mainApp.controller('ContextMenuController', ['$scope', '$rootScope', 'gdisk', '$mdDialog', '$mdToast',
-        function($scope, $rootScope, gdisk, $mdDialog, $mdToast) {
-
-            this.name = 'ContextMenuController';
-
-            $scope.$on('menuContext', function (event, data) {
-
-                console.log($scope);
-
-                $scope.$mdOpenMenu();
-            });
-
-            $scope.menuContextClicked = function($event){
-                $scope.$mdOpenMenu($event);
-                console.log($event.target);
+            $scope.downloadFolderContext = function(folder){
+                $scope.downloadSelected();
             }
 
         }]

@@ -5,7 +5,7 @@
             <div class="md-toolbar-tools">
                 <h1>Link</h1>
                 <span flex></span>
-                <md-button class="md-icon-button" ng-click="closeLink()">
+                <md-button class="md-icon-button" ng-click="closeLinkModal()">
                     <md-icon aria-label="Close dialog">close</md-icon>
                 </md-button>
             </div>
@@ -14,7 +14,7 @@
         <md-dialog-content>
             <md-input-container class="md-block">
                 <label></label>
-                <input  disabled ng-model="selected.link">
+                <input  disabled ng-model="$parent.selected.link">
             </md-input-container>
 
         </md-dialog-content>

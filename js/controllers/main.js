@@ -113,7 +113,8 @@ mainApp.controller('MainController', ['$scope', '$rootScope', '$http', '$routePa
          */
         $scope.setQuotaUsed = function(quota){
             $rootScope.quotaUsed = quota;
-        }
+        };
+
 
     }]
 );

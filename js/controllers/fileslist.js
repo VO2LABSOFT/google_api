@@ -65,7 +65,7 @@ mainApp.controller('fileslistController', ['$scope', '$rootScope', 'gdisk', '$md
                     }
                 );
 
-                $scope.itemlink = "sdjalsjdalsjdlajdlasjda" ;
+                $scope.selected = { "link":"sdjalsjdalsjdlajdlasjda"} ;
 
                 originatorEv = null;
             };

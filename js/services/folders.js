@@ -64,6 +64,7 @@ mainApp.service('gdisk', ['Drive', '$rootScope', '$filter', function(Drive, $roo
                 var item = {};
 
                 var fileSize = data[i]['fileSize'];
+
                 if(data[i]['fileSize']){
 
                     if(fileSize > 1 && fileSize < 1000){ fileSize += 'B'; }
@@ -89,6 +90,7 @@ mainApp.service('gdisk', ['Drive', '$rootScope', '$filter', function(Drive, $roo
                             item['selected'] = false;
                             item['size'] = fileSize;
                             item['link'] = data[i]['alternateLink'];
+                            item['version'] = data[i]['version'];
                         }
 
                         if(data[i]['explicitlyTrashed']) item.parent = 'trash';
@@ -112,6 +114,7 @@ mainApp.service('gdisk', ['Drive', '$rootScope', '$filter', function(Drive, $roo
                             item['iconLink'] = data[i]['iconLink'];
                             item['selected'] = false;
                             item['link'] = data[i]['alternateLink'];
+                            item['version'] = data[i]['version'];
                         }
                         if(!mObj.file(item['id'])){
                             if(data[i]['explicitlyTrashed']) item.folder = 'trash';
@@ -122,6 +125,26 @@ mainApp.service('gdisk', ['Drive', '$rootScope', '$filter', function(Drive, $roo
             }
 
         });
+    };
+
+    this.downloadSelected = function(){
+        /*if(selectedFolders.length > 0){
+            console.log('folders');
+            return Drive.getParents(selectedFolders[0]['id']);
+        }*/
+        if(selectedFiles.length > 0){
+            console.log('files');
+            return Drive.getFiles(selectedFiles[0]['id']);
+        }
+    };
+
+    /**
+     * return selected folders/files
+     * @returns {Array}
+     */
+    this.getSelected = function(){
+        if(selectedFiles.length > 0) return selectedFiles;
+        if(selectedFolders.length > 0) return selectedFolders;
     };
 
     /**

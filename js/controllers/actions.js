@@ -9,6 +9,8 @@ mainApp.controller('ActionsController', ['$scope', '$rootScope', 'gdisk', '$mdDi
 
             this.name = 'ActionsController';
 
+            $scope.selected = {};
+
             var originatorEv;
 
             /**
@@ -32,6 +34,8 @@ mainApp.controller('ActionsController', ['$scope', '$rootScope', 'gdisk', '$mdDi
 
                     if(parent.hasClass('mdl-grid')){
 
+                        $(parent.parent()).find('.mdl-grid').removeClass('selected');
+
                         if(parent.hasClass('selected')){
                             angular.element(parent.parent().children()).removeClass('selected'); // remove all selections
                             gdisk.selectFolder();
@@ -40,6 +44,7 @@ mainApp.controller('ActionsController', ['$scope', '$rootScope', 'gdisk', '$mdDi
                             parent.addClass('selected');
                             gdisk.selectFolder(folder);
                         }
+                        return true;
 
                     }
                 }
@@ -58,6 +63,8 @@ mainApp.controller('ActionsController', ['$scope', '$rootScope', 'gdisk', '$mdDi
 
                     if(parent.hasClass('mdl-grid')){
 
+                        $(parent.parent()).find('.mdl-grid').removeClass('selected');
+
                         if(parent.hasClass('selected')){
                             angular.element(parent.parent().children()).removeClass('selected'); // remove all selections
                             gdisk.selectFile();
@@ -66,7 +73,7 @@ mainApp.controller('ActionsController', ['$scope', '$rootScope', 'gdisk', '$mdDi
                             parent.addClass('selected');
                             gdisk.selectFile(file);
                         }
-
+                        return true;
                     }
                 }
                 return false;
@@ -95,6 +102,27 @@ mainApp.controller('ActionsController', ['$scope', '$rootScope', 'gdisk', '$mdDi
                     $rootScope.setTree(gdisk.rootFolders()); // refresh tree
 
                     $mdToast.show(toast);
+                });
+            };
+
+            /**
+             * Download selected
+             */
+            $scope.downloadSelected = function(){
+                gdisk.downloadSelected().then(function(resp){
+
+                    console.log(resp);
+                    if(resp.webContentLink){
+                        window.open(resp.webContentLink);
+                    }
+                    if(resp.exportLinks){
+                        var link = '';
+                        angular.forEach(resp.exportLinks, function(l,key){
+                            link = l;
+                        });
+                        window.open(link);
+                    }
+
                 });
             };
 
@@ -167,12 +195,40 @@ mainApp.controller('ActionsController', ['$scope', '$rootScope', 'gdisk', '$mdDi
                     $mdToast.show(toast);
 
                 });
-            }
-
+            };
 
             $scope.hidepopups = function(){
                 angular.element(window.document).find('md-menu-content').css('display','none');
                 angular.element(window.document).find('.mdl-grid').removeClass('selected');
+            };
+
+            /**
+             * Show folder/file link in popup
+             * @param ev
+             */
+            $scope.showLink = function(ev){
+
+                originatorEv = ev;
+                var selected = gdisk.getSelected();
+                $rootScope.selected = {};
+                $rootScope.selected['link'] = selected[0]['link'];
+
+                $mdDialog.show(
+                    {
+                        controller: 'ActionsController',
+                        templateUrl: '/js/views/dialogs/link.html',
+                        parent: angular.element(document.body),
+                        targetEvent: originatorEv,
+                        clickOutsideToClose:true,
+                        fullscreen: false
+                    }
+                );
+
+                originatorEv = null;
+            };
+
+            $scope.closeLinkModal = function(){
+                $mdDialog.cancel();
             }
 
         }]
