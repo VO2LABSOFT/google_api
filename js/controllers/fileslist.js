@@ -1,3 +1,7 @@
+/**
+ * Depricated
+ */
+
 'use strict';
 
 /* Controllers */
@@ -97,7 +101,20 @@ mainApp.controller('fileslistController', ['$scope', '$rootScope', 'gdisk', '$md
                         .content('Deleted')
                         .position('bottom right');
 
-                    $rootScope.loaded = true;
+                    /*(function(resp){
+                        if(resp.status == 204){
+                            // remove from selected
+                            mObj.selectFile(file);
+                            //delete files[files.indexOf(file)];
+                            files[files.indexOf(file)]['folder'] = 'trash';
+                        }
+                    })*/
+
+
+                    $scope.setFolders(gdisk.subFolders($scope.folder.fid)); // set loaded folders
+                    $scope.setFiles(gdisk.filesInFolder($scope.folder.fid)); // set loaded files
+
+                    //$scope.loaded = true;
                     $mdToast.show(toast);
                 });
             };

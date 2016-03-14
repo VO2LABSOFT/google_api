@@ -1,15 +1,18 @@
-<div class="mdl-layout__header-row" ng-controller="fileslistController">
+<div class="mdl-layout__header-row">
 
     <!-- Title -->
     <span class="mdl-layout-title"><strong>FILE MANAGER</strong></span>
     <div class="header-separator"></div>
 
     <!-- breadcrumbs -->
-    <md-menu ng-if="isRoot" ng-controller="secondController">
-        <md-button aria-label="" ng-click="openMenu($mdOpenMenu, $event)">Min enhet</md-button>
+    <md-menu ng-if="isRoot">
+        <md-button aria-label="" ng-click="openSkapaMenu($mdOpenMenu, $event)">
+            Min enhet
+            <i class="material-icons">arrow_drop_down</i>
+        </md-button>
         <md-menu-content width="4">
             <md-menu-item>
-                <md-button ng-click="skapa($event)"><md-icon md-menu-align-target>create_new_folder</md-icon>Mapp</md-button>
+                <md-button ng-click="newFolderModal($event)"><md-icon md-menu-align-target>create_new_folder</md-icon>Mapp</md-button>
             </md-menu-item>
             <md-menu-divider></md-menu-divider>
             <md-menu-item>
@@ -21,12 +24,36 @@
         </md-menu-content>
     </md-menu>
 
-    <nav ng-if="isFolder" ng-controller="secondController" class="mdl-navigation" ng-repeat="(key, value) in breadcrumbs">
+    <nav ng-if="isFolder" class="mdl-navigation" ng-repeat="(key, value) in breadcrumbs">
         <i ng-if="key" class="material-icons">keyboard_arrow_right</i>
-        <md-button ng-click="goto(value.id)">{{value.name}}</md-button>
+
+        <md-button ng-if="key+1!=breadcrumbs.length" ng-click="goto(value.id)">
+            {{value.name}}
+        </md-button>
+
+        <!-- Drop down menu for last item -->
+        <md-menu ng-if="key+1==breadcrumbs.length">
+            <md-button aria-label="" ng-click="openSkapaMenu($mdOpenMenu, $event)">
+                {{value.name}}
+                <i class="material-icons">arrow_drop_down</i>
+            </md-button>
+            <md-menu-content width="4">
+                <md-menu-item>
+                    <md-button ng-click="newFolderModal($event)"><md-icon md-menu-align-target>create_new_folder</md-icon>Mapp</md-button>
+                </md-menu-item>
+                <md-menu-divider></md-menu-divider>
+                <md-menu-item>
+                    <md-button ng-click="ctrl.redial($event)"><md-icon md-menu-align-target>file_upload</md-icon>Ladda upp filer</md-button>
+                </md-menu-item>
+                <md-menu-item>
+                    <md-button ng-click="ctrl.redial($event)"><md-icon md-menu-align-target>file_upload</md-icon>Hämtningsmapp</md-button>
+                </md-menu-item>
+            </md-menu-content>
+        </md-menu>
+
     </nav>
 
-    <nav ng-if="isTrash" ng-controller="secondController" class="mdl-navigation">
+    <nav ng-if="isTrash" class="mdl-navigation">
         <i ng-if="key" class="material-icons">keyboard_arrow_right</i>
         <md-button>Trash</md-button>
     </nav>
@@ -34,7 +61,7 @@
     <div class="mdl-layout-spacer"></div>
 
     <!-- Navigation -->
-    <nav class="mdl-navigation"  ng-controller="fileslistController">
+    <nav class="mdl-navigation">
         <button class="mdl-button mdl-js-button mdl-button--icon" data-upgraded=",MaterialButton">
             <i class="material-icons" ng-click="showLink($event)">link</i>
         </button>
@@ -45,7 +72,7 @@
             <i class="material-icons" ng-click="deleteSelected()">delete</i>
         </button>
 
-        <md-menu ng-controller="secondController">
+        <md-menu>
             <md-button ng-click="openMenu($mdOpenMenu, $event)"><md-icon md-menu-align-target>more_vert</md-icon></md-button>
             <md-menu-content width="4">
                 <md-menu-item>
@@ -58,7 +85,6 @@
         </md-menu>
 
     </nav>
-
 
     <div class="vertical-separator"></div>
 

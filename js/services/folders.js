@@ -1,7 +1,7 @@
 
 'use strict';
 
-mainApp.service('gdisk', ['Drive', '$rootScope', function(Drive,$rootScope){
+mainApp.service('gdisk', ['Drive', '$rootScope', '$filter', function(Drive, $rootScope, $filter){
 
     Date.prototype.yyyymmdd = function() {
         var yyyy = this.getFullYear().toString();
@@ -33,6 +33,9 @@ mainApp.service('gdisk', ['Drive', '$rootScope', function(Drive,$rootScope){
         /*{'id':'1', 'folder':'1', 'name':'testFile.txt','owner':'me','size':'100K','updateDate':'10.10.15', 'isfile':true},*/
     ];
 
+    // tree
+    this.tree = [];
+
     /**
      * Return root folders
      * @returns {Array}
@@ -43,8 +46,10 @@ mainApp.service('gdisk', ['Drive', '$rootScope', function(Drive,$rootScope){
         for(var i in folders) {
             if(folders[i]['parent'] == 0) roots.push(folders[i]);
         }
-        return roots;
 
+        roots = $filter('orderBy')(roots, 'name');
+
+        return roots;
     };
 
     /**
@@ -77,6 +82,7 @@ mainApp.service('gdisk', ['Drive', '$rootScope', function(Drive,$rootScope){
                             item['name'] = data[i]['title'];
                             item['owner'] = data[i]['ownerNames'].join(', ');
                             item['updateDate'] = (new Date(data[i]['modifiedDate'])).yyyymmdd();
+                            item['_updateDate'] = (new Date(data[i]['modifiedDate'])).getTime();
                             item['collapsed'] = true;
                             item['parent'] = data[i]['parents'][0]['isRoot'] ? 0 : data[i]['parents'][0]['id'] ;
                             item['iconLink'] = data[i]['iconLink'];
@@ -98,6 +104,7 @@ mainApp.service('gdisk', ['Drive', '$rootScope', function(Drive,$rootScope){
                             item['name'] = data[i]['title'];
                             item['owner'] = data[i]['ownerNames'].join(', ');
                             item['updateDate'] = (new Date(data[i]['modifiedDate'])).yyyymmdd();
+                            item['_updateDate'] = (new Date(data[i]['modifiedDate'])).getTime();
                             item['collapsed'] = true;
                             item['folder'] = data[i]['parents'][0]['isRoot'] ? 0 : data[i]['parents'][0]['id'] ;
                             item['isfile'] = true;
@@ -115,6 +122,14 @@ mainApp.service('gdisk', ['Drive', '$rootScope', function(Drive,$rootScope){
             }
 
         });
+    };
+
+    /**
+     * Load account info from api
+     * @returns {*}
+     */
+    this.loadInfo = function(){
+        return Drive.about();
     };
 
     this.files = function(folder) {
@@ -307,19 +322,10 @@ mainApp.service('gdisk', ['Drive', '$rootScope', function(Drive,$rootScope){
 
         var res;
         if(selectedFiles.length > 0) {
-            angular.forEach(selectedFiles, function(file, key) {
-                res = mObj.deleteFile(file).then(function(){
-                    $rootScope.files = mObj.filesInFolder($rootScope.folder.fid);
-                });
-            });
+            return mObj.deleteFile(selectedFiles[0]);
         }
-
         if(selectedFolders.length > 0) {
-            angular.forEach(selectedFolders, function(folder, key) {
-                res = mObj.deleteFolder(folder).then(function(){
-                    $rootScope.folders = mObj.subFolders($rootScope.folder.fid);
-                });
-            });
+            return mObj.deleteFolder(selectedFolders[0]);
         }
         return res;
     };
@@ -330,15 +336,7 @@ mainApp.service('gdisk', ['Drive', '$rootScope', function(Drive,$rootScope){
      * @returns {*}
      */
     this.deleteFile = function(file){
-        return Drive.trashFile(file.id).then(function(resp){
-            if(resp.status == 204){
-                // remove from selected
-                mObj.selectFile(file);
-                //delete files[files.indexOf(file)];
-                files[files.indexOf(file)]['folder'] = 'trash';
-            }
-            return true;
-        });
+        return Drive.trashFile(file.id);
     };
 
     /**
@@ -346,13 +344,33 @@ mainApp.service('gdisk', ['Drive', '$rootScope', function(Drive,$rootScope){
      * @param folder
      */
     this.deleteFolder = function(folder){
-        return Drive.trashFile(folder['id']).then(function(resp){
-            if(resp.status == 204){
-                // remove from selected
-                mObj.selectFolder(folder);
-                folders[folders.indexOf(folder)]['parent'] = 'trash';
-                console.log(folders[folders.indexOf(folder)]);
-                return true;
+        return Drive.trashFile(folder['id']);
+    };
+
+    /**
+     * Mark file as trash localy
+     * @param fileId
+     */
+    this.moveFileToTrashLocaly = function(fileId){
+        selectedFiles = [];
+        angular.forEach(files, function(value, key) {
+            if(value.id == fileId){
+                files[files.indexOf(value)]['folder'] = 'trash';
+                files[files.indexOf(value)]['_updateDate'] = (new Date()).getTime();
+            }
+        });
+    };
+
+    /**
+     * Mark folder as trash localy
+     * @param folderId
+     */
+    this.moveFolderToTrashLocaly = function(folderId){
+        selectedFolders = [];
+        angular.forEach(folders, function(value, key) {
+            if(value.id == folderId){
+                folders[folders.indexOf(value)]['parent'] = 'trash';
+                folders[folders.indexOf(value)]['_updateDate'] = (new Date()).getTime();
             }
         });
     };
@@ -374,21 +392,14 @@ mainApp.service('gdisk', ['Drive', '$rootScope', function(Drive,$rootScope){
 
         if(parent){ f['parents'] = [ {'id' : parent} ]; }
 
-        return Drive.insertFiles(f).then(function(resp){
+        return Drive.insertFiles(f);
+    };
 
-            folders.push({'id': resp.id,
-                'parent':parent,
-                'name':resp.title,
-                'owner': resp['ownerNames'].join(', '),
-                'size':'-',
-                'updateDate': (new Date(resp['modifiedDate'])).yyyymmdd(),
-                'collapsed':true,
-                'iconLink' : resp['iconLink']
-            });
-
-            return mObj.subFolders(parent);
-
-        });
+    /**
+     * Create folder localy
+     */
+    this.addFolderLocaly = function(folder){
+        folders.push(folder);
     };
 
     /**

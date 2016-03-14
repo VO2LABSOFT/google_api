@@ -1,20 +1,16 @@
 'use strict';
 
-/* Controllers */
-
-mainApp.controller('MainController', ['$scope', '$rootScope', '$http', '$routeParams', 'gdisk', 'GAPI', 'Drive', '$mdDialog', '$mdToast',
-    function($scope, $rootScope, $http, $routeParams,gdisk, GAPI, Drive, $mdDialog, $mdToast) {
+/**
+ * Main Controller.
+ * Make main route
+ */
+mainApp.controller('MainController', ['$scope', '$rootScope', '$http', '$routeParams', '$filter',
+    function($scope, $rootScope, $http, $routeParams, $filter) {
 
         this.name = 'MainController';
 
-        var scope = $rootScope;
-
-        var mObj = this;
-
-        /**
-         * DEFINE FOLDER
-         */
-        this.folder = {"fid":1};
+        // folder
+        this.folder = {};
         if($routeParams['folder']){
             this.folder.fid = $routeParams['folder'];
         }else{
@@ -22,38 +18,102 @@ mainApp.controller('MainController', ['$scope', '$rootScope', '$http', '$routePa
         }
         $rootScope.folder = this.folder;
 
-        /**
-         * init default params
-         */
-        $rootScope.loaded = this.loaded = true; // loading animations
-        $rootScope.folders = this.folders = []; // folders in current folder
-        $rootScope.files = this.files = []; // files in current folder
-        //scope.tree = this.tree = scope.tree ? scope.tree : []; // empty tree
-        $rootScope.breadcrumbs = this.breadcrumbs = gdisk.breadcrumbs($rootScope.folder.fid); // breadcrumbs to current folder
-        $rootScope.showItemMenu = true;
+        // folders
+        $rootScope.folders = [];
+
+        // files
+        $rootScope.files = [];
+
+        $rootScope.isFolder = ($rootScope.folder.fid !== '' && $rootScope.folder.fid !== 0 && $rootScope.folder.fid != 'trash');
+
+        $rootScope.isRoot = $rootScope.folder.fid === 0;
+
+        $rootScope.isTrash = $rootScope.folder.fid === 'trash';
 
         /**
-         * Load files from api and render
+         * set breadcrumbs
+         * @param bc
          */
-        GAPI.init().then(function(){
+        $scope.setBreadcrumbs = function(bc){
+            $rootScope.breadcrumbs = bc;
+        };
 
+        /**
+         * Set folders
+         * @param fs
+         */
+        $scope.setFolders = function(fs){
+            $rootScope.folders = fs;
+        };
+        // for modal windows
+        $rootScope.setFolders = function(fs){
+            $rootScope.folders = fs;
+        };
+
+        /**
+         * Set files
+         * @param fs
+         */
+        $scope.setFiles = function(fs){
+            $rootScope.files = fs;
+        };
+
+        /**
+         * Set tree navigation
+         * @param tr
+         */
+        $rootScope.setTree = function(tr){
+            if(!angular.equals($rootScope.tree, tr)){
+                $rootScope.tree = tr;
+            }else{
+                $rootScope.rebuildTree();
+            }
+        };
+
+        /**
+         * Show loading animation
+         */
+        $rootScope.startLoadingAnimation = function(){
             $rootScope.loaded = false;
-            gdisk.loadFiles().then(function(){
+        };
 
-                if(!angular.equals(scope.tree, gdisk.rootFolders())){
-                    $rootScope.tree = gdisk.rootFolders();
-                }
+        /**
+         * Hide loading animation
+         */
+        $rootScope.stopLoadingAnimation = function(){
+            $rootScope.loaded = true;
+        };
 
-                $rootScope.folders = gdisk.subFolders(mObj.folder.fid);
-                $rootScope.files = gdisk.filesInFolder(mObj.folder.fid);
+        /**
+         * Return current folder
+         * @returns {{}|*|item.folder|Function|folder|string}
+         */
+        $scope.curFolder = function(){
+            return $rootScope.folder;
+        };
 
-                //console.log(scope.files);
-                $rootScope.loaded = true;
-                $rootScope.breadcrumbs = gdisk.breadcrumbs(mObj.folder.fid);
+        /**
+         * Rebuilding tree
+         */
+        $rootScope.rebuildTree = function(){
+            $rootScope.tree.length++;
+        };
 
-            });
+        /**
+         * Set quota total
+         * @param quota
+         */
+        $scope.setQuotaTotal = function(quota){
+            $rootScope.quotaTotal = quota;
+        };
 
-        });
+        /**
+         * Set quota used
+         * @param quota
+         */
+        $scope.setQuotaUsed = function(quota){
+            $rootScope.quotaUsed = quota;
+        }
 
     }]
 );

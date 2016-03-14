@@ -45,7 +45,7 @@ mainApp.directive('foldersTree', ['gdisk', function (gdisk) {
                      */
                     scope.toFolder = function(e){
                         e.preventDefault();
-                        document.location.hash = "#/folder/"+angular.element(e.target).attr('folder-id');
+                        scope.goto(angular.element(e.target).attr('folder-id'));
                     };
 
                     /**
@@ -55,31 +55,33 @@ mainApp.directive('foldersTree', ['gdisk', function (gdisk) {
                      */
                     scope.buildTree = function(root, folders) {
 
-                        for(var i in folders) {
+                        angular.forEach(folders, function(item,key){
+
+                            if(item == null) return;
 
                             var li = angular.element('<li></li>');
                             var lnk = angular.element('<a>');
 
                             // check childs
-                            var childs = gdisk.subFolders(folders[i]['id']);
+                            var childs = gdisk.subFolders(item['id']);
 
                             lnk.addClass('mdl-navigation__link');
 
                             if(childs){
-                                if(folders[i]['collapsed']){
+                                if(item['collapsed']){
                                     lnk.append(
                                         angular.element("<i></i>")
                                             .addClass('material-icons')
                                             .html('keyboard_arrow_right')
                                             .bind("click",scope.toggleFolder)
-                                            .attr("folder-id",folders[i]['id']));
+                                            .attr("folder-id",item['id']));
                                 }else{
                                     lnk.append(
                                         angular.element("<i></i>")
                                             .addClass('material-icons')
                                             .html('keyboard_arrow_down')
                                             .bind("click",scope.toggleFolder)
-                                            .attr("folder-id",folders[i]['id']));
+                                            .attr("folder-id",item['id']));
                                 }
 
                             }else{
@@ -89,28 +91,30 @@ mainApp.directive('foldersTree', ['gdisk', function (gdisk) {
                             }
 
                             lnk.append(
-                                    angular.element("<span></span>")
-                                        .addClass("mdl-button mdl-js-button mdl-button--icon")
-                                        .attr("data-upgraded",",MaterialButton")
-                                        .append(
-                                        angular.element("<i>")
-                                            .addClass("material-icons")
-                                            .html("folder")
-                                            .bind("click",scope.toFolder)
-                                            .attr("folder-id", folders[i]['id'])))
-                                    .append(folders[i]['name']);
+                                angular.element("<span></span>")
+                                    .addClass("mdl-button mdl-js-button mdl-button--icon")
+                                    .attr("data-upgraded",",MaterialButton")
+                                    .append(
+                                    angular.element("<i>")
+                                        .addClass("material-icons")
+                                        .html("folder")
+                                        .bind("click",scope.toFolder)
+                                        .attr("folder-id", item['id'])))
+                                .append(item['name']);
 
                             li.append(lnk);
 
                             if(childs) {
                                 var _root = angular.element("<ul></ul>"); // make root
-                                if(folders[i]['collapsed']) _root.addClass('hidden');
+                                if(item['collapsed']) _root.addClass('hidden');
                                 scope.buildTree(_root,childs);
                                 li.append(_root);
                             }
 
                             root.append(li);
-                        }
+
+                        });
+
                     }
 
                 },
@@ -129,9 +133,7 @@ mainApp.directive('foldersTree', ['gdisk', function (gdisk) {
                         }
 
                         root.append(_folders);
-
                     });
-
                 }
             }
         }
