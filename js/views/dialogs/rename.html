@@ -1,0 +1,28 @@
+<md-dialog aria-label="" style="width:60%;">
+    <form>
+
+        <md-toolbar >
+            <div class="md-toolbar-tools">
+                <h1>Title</h1>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="closeLinkModal()">
+                    <md-icon aria-label="Close dialog">close</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+            <md-input-container class="md-block">
+                <label>Name </label>
+                <input  ng-model="$parent.selectedItem.name">
+            </md-input-container>
+
+            <md-dialog-actions layout="row" >
+                <span flex></span>
+                <md-button md-autofocus ng-click="confirmRenameModal()">Save</md-button>
+            </md-dialog-actions>
+
+        </md-dialog-content>
+
+    </form>
+</md-dialog>

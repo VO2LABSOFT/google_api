@@ -4,14 +4,21 @@
  * Actions Controller.
  * Realize actions for files/folders, navigations.
  */
-mainApp.controller('ActionsController', ['$scope', '$rootScope', 'gdisk', '$mdDialog', '$mdToast',
-        function($scope, $rootScope, gdisk, $mdDialog, $mdToast) {
+mainApp.controller('ActionsController', ['$scope', '$rootScope', 'gdisk', '$mdDialog', '$mdToast', 'Drive',
+        function($scope, $rootScope, gdisk, $mdDialog, $mdToast, Drive) {
 
             this.name = 'ActionsController';
 
-            $scope.selected = {};
-
             var originatorEv;
+
+            /**
+             * set folder to move to
+             * @param folder
+             */
+            $scope.setFolderToMove = function(folder){
+                $rootScope.folderToMoveTo = folder;
+                console.log($rootScope.folderToMoveTo);
+            };
 
             /**
              * Navigate to folder
@@ -229,6 +236,131 @@ mainApp.controller('ActionsController', ['$scope', '$rootScope', 'gdisk', '$mdDi
 
             $scope.closeLinkModal = function(){
                 $mdDialog.cancel();
+            }
+
+            /**
+             * show rename item modal
+             * @param ev
+             */
+            $scope.renameFolder = function(ev){
+                originatorEv = ev;
+                var selected = gdisk.getSelected();
+
+                $rootScope.selectedItem = selected[0];
+
+                $mdDialog.show(
+                    {
+                        controller: 'ActionsController',
+                        templateUrl: '/js/views/dialogs/rename.html',
+                        parent: angular.element(document.body),
+                        targetEvent: originatorEv,
+                        clickOutsideToClose:true,
+                        fullscreen: false
+                    }
+                );
+
+                originatorEv = null;
+            };
+
+            /**
+             * Confirm rename
+             */
+            $scope.confirmRenameModal = function(){
+
+                $mdDialog.cancel(); // close modal
+
+                gdisk.updateFile($rootScope.selectedItem).then(function(resp){
+                    //gdisk.updateFileLocaly(resp);
+
+                    if(resp.mimeType == "application/vnd.google-apps.folder"){
+                        gdisk.updateFolderLocaly({'id': resp.id,
+                            'parent':resp.parents[0]['id'],
+                            'name':resp.title,
+                            'owner': resp['ownerNames'].join(', '),
+                            'size':'-',
+                            'updateDate': (new Date(resp['modifiedDate'])).yyyymmdd(),
+                            'collapsed':true,
+                            'iconLink' : resp['iconLink']
+                        });
+                    }else{
+                        gdisk.updateFolderLocaly({'id': resp.id,
+                            'folder':resp.parents[0]['id'],
+                            'name':resp.title,
+                            'owner': resp['ownerNames'].join(', '),
+                            'size':'-',
+                            'updateDate': (new Date(resp['modifiedDate'])).yyyymmdd(),
+                            'collapsed':true,
+                            'iconLink' : resp['iconLink']
+                        });
+                    }
+
+                });
+            };
+
+            /**
+             * Show move modal
+             */
+            $scope.moveModal = function(folder){
+
+                $rootScope.folderToMoveTo = false;
+                $rootScope.folderToMove = folder;
+
+                $rootScope.oldParent = (folder.parent || folder.parent == 0) ? folder.parent : folder.folder;
+
+                $mdDialog.show(
+                    {
+                        controller: 'ActionsController',
+                        templateUrl: '/js/views/dialogs/move.html',
+                        parent: angular.element(document.body),
+                        targetEvent: originatorEv,
+                        clickOutsideToClose:true,
+                        fullscreen: false
+                    }
+                );
+
+                originatorEv = null;
+            };
+
+            /**
+             * Confirm move
+             */
+            $scope.confirmMove = function(){
+
+                $mdDialog.cancel(); // close modal
+
+                Drive.insertParents($rootScope.folderToMove.id,{'id':$rootScope.folderToMoveTo});
+
+
+                //gdisk.moveFile($rootScope.folderToMove.id, $rootScope.oldParent, $rootScope.folderToMoveTo).then(function(resp){
+
+                    //console.log(resp);
+
+                    //console.log($rootScope.folderToMove, $rootScope.folderToMoveTo);
+
+                    /*if(resp.mimeType == "application/vnd.google-apps.folder"){
+                        gdisk.updateFolderLocaly({'id': resp.id,
+                            'parent':resp.parents[0]['id'],
+                            'name':resp.title,
+                            'owner': resp['ownerNames'].join(', '),
+                            'size':'-',
+                            'updateDate': (new Date(resp['modifiedDate'])).yyyymmdd(),
+                            'collapsed':true,
+                            'iconLink' : resp['iconLink']
+                        });
+                    }else{
+                        gdisk.updateFolderLocaly({'id': resp.id,
+                            'folder':resp.parents[0]['id'],
+                            'name':resp.title,
+                            'owner': resp['ownerNames'].join(', '),
+                            'size':'-',
+                            'updateDate': (new Date(resp['modifiedDate'])).yyyymmdd(),
+                            'collapsed':true,
+                            'iconLink' : resp['iconLink']
+                        });
+                    }*/
+
+                //});
+
             }
 
         }]

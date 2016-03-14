@@ -11,6 +11,8 @@ mainApp.directive('foldersTree', ['gdisk', function (gdisk) {
 
                 pre: function(scope, element, attributes, controller, transcludeFn){
 
+                    scope.modal = false;
+
                     /**
                      * Show|hide folder
                      * @param e
@@ -48,12 +50,23 @@ mainApp.directive('foldersTree', ['gdisk', function (gdisk) {
                         scope.goto(angular.element(e.target).attr('folder-id'));
                     };
 
+                    scope._setFolderToMove = function(e){
+                        e.preventDefault();
+
+                        $(e.target).closest('ul.root').find('a.mdl-navigation__link').css('font-weight','normal').css('text-decoration','none');
+                        $(e.target).closest('a.mdl-navigation__link').css('font-weight','bold').css('text-decoration','underline');
+                        scope.setFolderToMove(angular.element(e.target).attr('folder-id'));
+
+                    };
+
                     /**
                      * Build tree recursive
                      * @param root
                      * @param folders
                      */
                     scope.buildTree = function(root, folders) {
+
+                        console.log(scope.modal);
 
                         angular.forEach(folders, function(item,key){
 
@@ -98,7 +111,7 @@ mainApp.directive('foldersTree', ['gdisk', function (gdisk) {
                                     angular.element("<i>")
                                         .addClass("material-icons")
                                         .html("folder")
-                                        .bind("click",scope.toFolder)
+                                        .bind("click", scope.modal ? scope._setFolderToMove : scope.toFolder)
                                         .attr("folder-id", item['id'])))
                                 .append(item['name']);
 
@@ -124,6 +137,7 @@ mainApp.directive('foldersTree', ['gdisk', function (gdisk) {
 
                         var tree = value ? JSON.parse(value) : '';
                         var root = element;
+                        scope.modal = attributes.modal ? attributes.modal : false;
 
                         angular.element(root).find('li').remove();
 

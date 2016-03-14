@@ -127,6 +127,44 @@ mainApp.service('gdisk', ['Drive', '$rootScope', '$filter', function(Drive, $roo
         });
     };
 
+    /**
+     * Update file on drive
+     * @param item
+     * @returns {*}
+     */
+    this.updateFile = function(item){
+        return Drive.updateFiles(item.id, {title:item.name});
+    };
+
+    this.moveFile = function(id, oldparent, newparent){
+
+
+        Drive.insertParents(id,newparent).then(function(){
+            Drive.deleteParents(id, oldparent);
+        });
+
+        //console.log(id,oldparent);
+        //return Drive.updateFiles(id, {removeParents: oldparent});
+    };
+
+    /**
+     * Update file localy
+     * @param item
+     */
+    this.updateFileLocaly = function(item){
+        var file = mObj.file(item.id);
+        file = item;
+    };
+
+    /**
+     * Update folder localy
+     * @param item
+     */
+    this.updateFolderLocaly = function(item){
+        var folder = mObj.folder(item.id);
+        folder = item;
+    };
+
     this.downloadSelected = function(){
         /*if(selectedFolders.length > 0){
             console.log('folders');
@@ -305,6 +343,7 @@ mainApp.service('gdisk', ['Drive', '$rootScope', '$filter', function(Drive, $roo
         folder = folder ? folder : false;
 
         selectedFolders = [];
+        selectedFiles = [];
 
         if(!folder){
             $rootScope.showItemMenu = false;
@@ -313,7 +352,6 @@ mainApp.service('gdisk', ['Drive', '$rootScope', '$filter', function(Drive, $roo
 
         selectedFolders.push(folder);
         mObj.selected = folder;
-        //$rootScope.showItemMenu = selectedFolders.length > 0;
 
     };
 
@@ -327,6 +365,7 @@ mainApp.service('gdisk', ['Drive', '$rootScope', '$filter', function(Drive, $roo
 
         file = file ? file : false;
 
+        selectedFolders = [];
         selectedFiles = [];
 
         if(!file){

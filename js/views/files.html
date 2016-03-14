@@ -153,8 +153,8 @@
 
             <md-menu-content class="context" style="display: none;">
                 <md-menu-item><md-button ng-click="showLinkContext(folder)"><md-icon md-menu-align-target>link</md-icon>Link</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="doSomething()"><md-icon md-menu-align-target>move_to_inbox</md-icon>Move</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="doSomething()"><md-icon md-menu-align-target>mode_edit</md-icon>Rename</md-button></md-menu-item>
+                <md-menu-item><md-button ng-click="moveModal(folder)"><md-icon md-menu-align-target>move_to_inbox</md-icon>Move</md-button></md-menu-item>
+                <md-menu-item><md-button ng-click="renameFolder(folder)"><md-icon md-menu-align-target>mode_edit</md-icon>Rename</md-button></md-menu-item>
                 <md-menu-item><md-button ng-click="deleteFolderContext(folder)"><md-icon md-menu-align-target>delete</md-icon>Remove</md-button></md-menu-item>
             </md-menu-content>
 
@@ -171,9 +171,9 @@
             <div class="mdl-cell mdl-cell--2-col">{{file.size}}</div>
 
             <md-menu-content class="context" style="display: none;">
-                <md-menu-item><md-button ng-click="showLinkContext(folder)"><md-icon md-menu-align-target>link</md-icon>Link</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="doSomething()"><md-icon md-menu-align-target>move_to_inbox</md-icon>Move</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="doSomething()"><md-icon md-menu-align-target>mode_edit</md-icon>Rename</md-button></md-menu-item>
+                <md-menu-item><md-button ng-click="showLinkContext(file)"><md-icon md-menu-align-target>link</md-icon>Link</md-button></md-menu-item>
+                <md-menu-item><md-button ng-click="moveModal(file)"><md-icon md-menu-align-target>move_to_inbox</md-icon>Move</md-button></md-menu-item>
+                <md-menu-item><md-button ng-click="renameFolder(file)"><md-icon md-menu-align-target>mode_edit</md-icon>Rename</md-button></md-menu-item>
                 <md-menu-item><md-button ng-click="downloadFolderContext(folder)"><md-icon md-menu-align-target>file_download</md-icon>Download</md-button></md-menu-item>
                 <md-menu-item><md-button ng-click="deleteFolderContext(folder)"><md-icon md-menu-align-target>delete</md-icon>Remove</md-button></md-menu-item>
             </md-menu-content>

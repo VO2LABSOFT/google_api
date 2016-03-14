@@ -30,6 +30,8 @@ mainApp.controller('MainController', ['$scope', '$rootScope', '$http', '$routePa
 
         $rootScope.isTrash = $rootScope.folder.fid === 'trash';
 
+        $rootScope.selectedItem = {};
+
         /**
          * set breadcrumbs
          * @param bc
