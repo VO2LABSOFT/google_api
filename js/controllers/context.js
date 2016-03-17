@@ -9,18 +9,17 @@ mainApp.controller('ContextController', ['$scope', '$rootScope', 'gdisk', '$mdDi
 
             this.name = 'TreeController';
 
-            $scope.itemContext = function($event, item){
+            $scope.contextMenu = function($event, item){
 
                 var parent = $($event.target).closest('.mdl-grid');
                 var cmenu = $(parent).find('md-menu-content');
 
-                // hide previous open context
-                $(parent).closest('.tablerow').find('md-menu-content').css('display','none');
+                $scope.closeContext();
 
-                if(!item.folder && item.folder !== 0){
-                    if( !$scope.selectFolder(item) ) return;
+                if(!item.folder){
+                    gdisk.folder.select(item);
                 }else{
-                    if( !$scope.selectFile(item) ) return;
+                    gdisk.file.select(item);
                 }
 
                 $(cmenu).css('display','block');
@@ -36,19 +35,23 @@ mainApp.controller('ContextController', ['$scope', '$rootScope', 'gdisk', '$mdDi
 
                 $(cmenu).css( 'left', angular.element($event)[0]['layerX']+'px');
                 $(cmenu).css( 'top', top);
+
+                $event.stopPropagation();
+                return false;
             };
 
-            $scope.showLinkContext = function(item){
-                $scope.showLink();
+            /**
+             * Close all opened context menu
+             */
+            $scope.closeContext = function(){
+                // hide previous open context
+                $('.tablerow').find('md-menu-content').css('display','none');
             };
 
-            $scope.deleteFolderContext = function(folder){
-                $scope.deleteSelected();
-            };
+            $rootScope.$on('closeContext', function(){
+                $('.tablerow').find('md-menu-content').css('display','none');
+            });
 
-            $scope.downloadFolderContext = function(folder){
-                $scope.downloadSelected();
-            }
 
         }]
 );

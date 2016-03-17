@@ -5,14 +5,14 @@
     <div class="header-separator"></div>
 
     <!-- breadcrumbs -->
-    <md-menu ng-if="isRoot">
-        <md-button aria-label="" ng-click="openSkapaMenu($mdOpenMenu, $event)">
+    <md-menu ng-if="isRoot" ng-controller="FolderModalController">
+        <md-button aria-label="" ng-click="$mdOpenMenu($event)">
             Min enhet
             <i class="material-icons">arrow_drop_down</i>
         </md-button>
         <md-menu-content width="4">
             <md-menu-item>
-                <md-button ng-click="newFolderModal($event)"><md-icon md-menu-align-target>create_new_folder</md-icon>Mapp</md-button>
+                <md-button ng-click="open()"><md-icon md-menu-align-target>create_new_folder</md-icon>Mapp</md-button>
             </md-menu-item>
             <md-menu-divider></md-menu-divider>
             <md-menu-item>
@@ -32,14 +32,14 @@
         </md-button>
 
         <!-- Drop down menu for last item -->
-        <md-menu ng-if="key+1==breadcrumbs.length">
-            <md-button aria-label="" ng-click="openSkapaMenu($mdOpenMenu, $event)">
+        <md-menu ng-if="key+1==breadcrumbs.length" ng-controller="FolderModalController">
+            <md-button aria-label="" ng-click="$mdOpenMenu($event)">
                 {{value.name}}
                 <i class="material-icons">arrow_drop_down</i>
             </md-button>
             <md-menu-content width="4">
                 <md-menu-item>
-                    <md-button ng-click="newFolderModal($event)"><md-icon md-menu-align-target>create_new_folder</md-icon>Mapp</md-button>
+                    <md-button ng-click="open()"><md-icon md-menu-align-target>create_new_folder</md-icon>Mapp</md-button>
                 </md-menu-item>
                 <md-menu-divider></md-menu-divider>
                 <md-menu-item>
@@ -63,13 +63,13 @@
     <!-- Navigation -->
     <nav class="mdl-navigation">
         <button class="mdl-button mdl-js-button mdl-button--icon" data-upgraded=",MaterialButton">
-            <i class="material-icons" ng-click="showLink($event)">link</i>
+            <i class="material-icons" ng-click="link.open()">link</i>
         </button>
         <button class="mdl-button mdl-js-button mdl-button--icon" data-upgraded=",MaterialButton">
             <i class="material-icons">person_add</i>
         </button>
         <button class="mdl-button mdl-js-button mdl-button--icon" data-upgraded=",MaterialButton">
-            <i class="material-icons" ng-click="deleteSelected()">delete</i>
+            <i class="material-icons" ng-click="delete()">delete</i>
         </button>
 
         <md-menu>

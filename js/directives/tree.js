@@ -31,12 +31,12 @@ mainApp.directive('foldersTree', ['gdisk', function (gdisk) {
                                 childs.removeClass('hidden').addClass('visible');// show
                                 angular.element(e.target).html("keyboard_arrow_down");
                                 //_f.collapsed = false;
-                                gdisk.expandFolder(folderId)
+                                gdisk.folder.expand(folderId)
                             } else { // hide
                                 childs.removeClass('visible').addClass('hidden');
                                 angular.element(e.target).html("keyboard_arrow_right");
                                 //_f.collapsed = true;
-                                gdisk.collapseFolder(folderId);
+                                gdisk.folder.collapse(folderId);
                             }
                         }
                     };
@@ -66,8 +66,6 @@ mainApp.directive('foldersTree', ['gdisk', function (gdisk) {
                      */
                     scope.buildTree = function(root, folders) {
 
-                        console.log(scope.modal);
-
                         angular.forEach(folders, function(item,key){
 
                             if(item == null) return;
@@ -76,7 +74,7 @@ mainApp.directive('foldersTree', ['gdisk', function (gdisk) {
                             var lnk = angular.element('<a>');
 
                             // check childs
-                            var childs = gdisk.subFolders(item['id']);
+                            var childs = gdisk.folder.childs(item['id']);
 
                             lnk.addClass('mdl-navigation__link');
 

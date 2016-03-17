@@ -5,7 +5,7 @@
             <div class="md-toolbar-tools">
                 <h1>Title</h1>
                 <span flex></span>
-                <md-button class="md-icon-button" ng-click="closeLinkModal()">
+                <md-button class="md-icon-button" ng-click="close()">
                     <md-icon aria-label="Close dialog">close</md-icon>
                 </md-button>
             </div>
@@ -14,12 +14,12 @@
         <md-dialog-content>
             <md-input-container class="md-block">
                 <label>Name </label>
-                <input  ng-model="$parent.selectedItem.name">
+                <input  ng-model="$parent.selected.name">
             </md-input-container>
 
             <md-dialog-actions layout="row" >
                 <span flex></span>
-                <md-button md-autofocus ng-click="confirmRenameModal()">Save</md-button>
+                <md-button md-autofocus ng-click="rename.confirm()">Save</md-button>
             </md-dialog-actions>
 
         </md-dialog-content>

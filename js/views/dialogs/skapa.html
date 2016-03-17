@@ -1,26 +1,26 @@
-<md-dialog aria-label="Mango (Fruit)" ng-controller="ActionsController">
+<md-dialog aria-label="Mango (Fruit)">
     <form>
 
         <md-toolbar>
             <div class="md-toolbar-tools">
                 <h1>New folder</h1>
                 <span flex></span>
-                <md-button class="md-icon-button" ng-click="cancelNewFolderModal($event)">
+                <md-button class="md-icon-button" ng-click="newFolderCancel($event)">
                     <md-icon aria-label="Close dialog">close</md-icon>
                 </md-button>
             </div>
         </md-toolbar>
 
         <md-dialog-content>
+
             <md-input-container class="md-block">
                 <label>new folder</label>
-                <input ng-model="newfolder">
+                <input ng-model="name">
             </md-input-container>
-
 
             <md-dialog-actions layout="row" >
                 <span flex></span>
-                <md-button md-autofocus ng-click="confirmNewFolderModal()">Save</md-button>
+                <md-button md-autofocus ng-click="confirm()">Save</md-button>
             </md-dialog-actions>
 
         </md-dialog-content>

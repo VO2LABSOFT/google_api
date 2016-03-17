@@ -1,25 +1,21 @@
 <!-- Tree -->
 <div id="left">
 
-    <md-menu>
-        <md-button aria-label="Open phone interactions menu" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" ng-click="openSkapaMenu($mdOpenMenu, $event)">
+    <md-menu ng-controller="FolderModalController">
+        <md-button aria-label="Skapa" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" ng-click="$mdOpenMenu($event)">
             SKAPA
         </md-button>
         <md-menu-content width="4">
-
             <md-menu-item>
-                <md-button ng-click="newFolderModal($event)"><md-icon md-menu-align-target>create_new_folder</md-icon>Mapp</md-button>
+                <md-button ng-click="open()"><md-icon md-menu-align-target>create_new_folder</md-icon>Mapp1</md-button>
             </md-menu-item>
-
             <md-menu-divider></md-menu-divider>
-
             <md-menu-item>
-                <md-button ng-click="ctrl.redial($event)"><md-icon md-menu-align-target>file_upload</md-icon>Ladda upp filer</md-button>
+                <md-button><md-icon md-menu-align-target>file_upload</md-icon>Ladda upp filer</md-button>
             </md-menu-item>
             <md-menu-item>
-                <md-button ng-click="ctrl.redial($event)"><md-icon md-menu-align-target>file_upload</md-icon>Hämtningsmapp</md-button>
+                <md-button><md-icon md-menu-align-target>file_upload</md-icon>Hämtningsmapp</md-button>
             </md-menu-item>
-
         </md-menu-content>
     </md-menu>
 
@@ -91,58 +87,14 @@
 
     <div class="tablerow">
 
-
-        <!-- <md-menu ng-controller="ContextMenuController" ng-repeat="folder in folders | orderBy:order" ng-click="selectFolder(folder)" ng-right-click="menuContextClicked($event);">
-
-            <div class="mdl-grid" >
-                <div class="mdl-cell--6-col mdl-cell">
-                    <img ng-click="goto(folder.id)" ng-src="{{folder.iconLink}}" />
-                    <span>{{folder.name}}</span>
-                </div>
-                <div class=" mdl-cell--2-col mdl-cell">{{folder.owner}}</div>
-                <div class=" mdl-cell--2-col mdl-cell">{{folder.updateDate}}</div>
-                <div class=" mdl-cell--2-col mdl-cell">{{folder.size}}</div>
-            </div>
-
-            <md-menu-content>
-                <md-menu-item><md-button ng-click="doSomething()"><md-icon md-menu-align-target>create_new_folder</md-icon>Create</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="doSomething()"><md-icon md-menu-align-target>link</md-icon>Link</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="doSomething()"><md-icon md-menu-align-target>move_to_inbox</md-icon>Move</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="doSomething()"><md-icon md-menu-align-target>mode_edit</md-icon>Rename</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="doSomething()"><md-icon md-menu-align-target>file_download</md-icon>Download</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="doSomething()"><md-icon md-menu-align-target>delete</md-icon>Remove</md-button></md-menu-item>
-            </md-menu-content>
-
-        </md-menu>
-
-
-
-        <md-menu ng-controller="ContextController" ng-repeat="file in files | orderBy:order" ng-click="selectFolder(folder)" ng-right-click="$mdOpenMenu($event);">
-
-            <div class="mdl-grid">
-                <div class="mdl-cell mdl-cell--6-col">
-                    <img ng-click="" ng-src="{{file.iconLink}}"  />
-                    <span >{{file.name}}</span>
-                </div>
-                <div class="mdl-cell mdl-cell--2-col">{{file.owner}}</div>
-                <div class="mdl-cell mdl-cell--2-col">{{file.updateDate}}</div>
-                <div class="mdl-cell mdl-cell--2-col">{{file.size}}</div>
-            </div>
-
-            <md-menu-content>
-                <md-menu-item><md-button ng-click="doSomething()"><md-icon md-menu-align-target>create_new_folder</md-icon>Create</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="doSomething()"><md-icon md-menu-align-target>link</md-icon>Link</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="doSomething()"><md-icon md-menu-align-target>move_to_inbox</md-icon>Move</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="doSomething()"><md-icon md-menu-align-target>mode_edit</md-icon>Rename</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="doSomething()"><md-icon md-menu-align-target>file_download</md-icon>Download</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="doSomething()"><md-icon md-menu-align-target>delete</md-icon>Remove</md-button></md-menu-item>
-            </md-menu-content>
-
-        </md-menu>-->
-
-
-
-        <div ng-controller="ContextController" ng-repeat="folder in folders | orderBy:order" class="mdl-grid" id="{{folder.id}}"  ng-click="selectFolder(folder)" ng-right-click="itemContext($event,folder)">
+        <!-- folders -->
+        <div ng-controller="ContextController"
+             ng-repeat="folder in folders | orderBy:order"
+             ng-click="select($event,folder)"
+             ng-class="{'selected' : folder.selected}"
+             ng-right-click="contextMenu($event,folder)"
+             class="mdl-grid"
+             id="{{folder.id}}">
 
             <div class="mdl-cell mdl-cell--6-col">
                 <img ng-click="goto(folder.id)" ng-src="{{folder.iconLink}}" />
@@ -150,18 +102,23 @@
             <div class="mdl-cell mdl-cell--2-col">{{folder.owner}}</div>
             <div class="mdl-cell mdl-cell--2-col">{{folder.updateDate}}</div>
             <div class="mdl-cell mdl-cell--2-col">{{folder.size}}</div>
-
             <md-menu-content class="context" style="display: none;">
-                <md-menu-item><md-button ng-click="showLinkContext(folder)"><md-icon md-menu-align-target>link</md-icon>Link</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="moveModal(folder)"><md-icon md-menu-align-target>move_to_inbox</md-icon>Move</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="renameFolder(folder)"><md-icon md-menu-align-target>mode_edit</md-icon>Rename</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="deleteFolderContext(folder)"><md-icon md-menu-align-target>delete</md-icon>Remove</md-button></md-menu-item>
+                <md-menu-item><md-button ng-click="link.open($event)"><md-icon md-menu-align-target>link</md-icon>Link</md-button></md-menu-item>
+                <md-menu-item><md-button ng-click="move.open($event)"><md-icon md-menu-align-target>move_to_inbox</md-icon>Move</md-button></md-menu-item>
+                <md-menu-item><md-button ng-click="rename.open($event)"><md-icon md-menu-align-target>mode_edit</md-icon>Rename</md-button></md-menu-item>
+                <md-menu-item><md-button ng-click="delete($event)"><md-icon md-menu-align-target>delete</md-icon>Remove</md-button></md-menu-item>
             </md-menu-content>
-
         </div>
 
+        <!-- files -->
+        <div ng-controller="ContextController"
+             ng-repeat="file in files | orderBy:order"
+             ng-click="select($event,file)"
+             ng-class="{'selected' : file.selected}"
+             ng-right-click="contextMenu($event,file)"
+             class="mdl-grid"
+             id="{{file.id}}" >
 
-        <div ng-controller="ContextController" ng-repeat="file in files | orderBy:order" class="mdl-grid" id="{{file.id}}"  ng-click="selectFile(file)" ng-right-click="itemContext($event,file)">
             <div class="mdl-cell mdl-cell--6-col">
                 <img  ng-src="{{file.iconLink}}"  />
                 <span >{{file.name}}</span>
@@ -171,11 +128,11 @@
             <div class="mdl-cell mdl-cell--2-col">{{file.size}}</div>
 
             <md-menu-content class="context" style="display: none;">
-                <md-menu-item><md-button ng-click="showLinkContext(file)"><md-icon md-menu-align-target>link</md-icon>Link</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="moveModal(file)"><md-icon md-menu-align-target>move_to_inbox</md-icon>Move</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="renameFolder(file)"><md-icon md-menu-align-target>mode_edit</md-icon>Rename</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="downloadFolderContext(folder)"><md-icon md-menu-align-target>file_download</md-icon>Download</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="deleteFolderContext(folder)"><md-icon md-menu-align-target>delete</md-icon>Remove</md-button></md-menu-item>
+                <md-menu-item><md-button ng-click="link.open($event)"><md-icon md-menu-align-target>link</md-icon>Link</md-button></md-menu-item>
+                <md-menu-item><md-button ng-click="move.open($event)"><md-icon md-menu-align-target>move_to_inbox</md-icon>Move</md-button></md-menu-item>
+                <md-menu-item><md-button ng-click="rename.open($event)"><md-icon md-menu-align-target>mode_edit</md-icon>Rename</md-button></md-menu-item>
+                <md-menu-item><md-button ng-click="download($event)"><md-icon md-menu-align-target>file_download</md-icon>Download</md-button></md-menu-item>
+                <md-menu-item><md-button ng-click="delete($event)"><md-icon md-menu-align-target>delete</md-icon>Remove</md-button></md-menu-item>
             </md-menu-content>
 
         </div>
