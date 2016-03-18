@@ -223,6 +223,30 @@ mainApp.service('gdisk', ['Drive', '$rootScope', '$filter', function(Drive, $roo
                 return false;
             }
             return false;
+        },
+
+        /**
+         * Load permissions for folder
+         * @param folderId
+         */
+        'getpermissions':function(folderId){
+            Drive.listPermissions(folderId).then(function(resp){ $rootScope.$broadcast('permission_loaded', resp); });
+        },
+
+        'setpermissions':function(folderId, permisssions){
+
+            angular.forEach(permisssions, function(value,key){
+
+                var len = permisssions.length;
+
+                Drive.patchPermissions(folderId, value['id'], value).then(function(res){
+                    if(key+1 == len){
+                        $rootScope.$broadcast('permission_updated');
+                    }
+                });
+
+            });
+
         }
 
     };

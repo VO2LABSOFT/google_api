@@ -4,8 +4,8 @@
  * Actions Controller for modal window.
  * Realize actions for modal windows.
  */
-mainApp.controller('ActionsModalController', ['$scope', '$rootScope', 'gdisk', '$mdDialog', '$mdToast', 'Drive',
-    function($scope, $rootScope, gdisk, $mdDialog, $mdToast, Drive) {
+mainApp.controller('ActionsModalController', ['$scope', '$filter', '$rootScope', 'gdisk', '$mdDialog', '$mdToast', 'Drive',
+    function($scope, $filter, $rootScope, gdisk, $mdDialog, $mdToast, Drive) {
 
         var originatorEv;
 
@@ -143,6 +143,86 @@ mainApp.controller('ActionsModalController', ['$scope', '$rootScope', 'gdisk', '
 
             }
         };
+
+        /**
+         * Access managment
+         * @type {{}}
+         */
+        $scope.rights = {
+            'open':function($event){
+                if($rootScope.selected){
+
+                    if($rootScope.selected['parent']){
+                        gdisk.folder.getpermissions($rootScope.selected['id']);
+                    }
+                    if($rootScope.selected['folder']){
+
+                    }
+
+                    originatorEv = $event;
+                    $mdDialog.show(
+                        {
+                            controller: 'ActionsModalController',
+                            templateUrl: '/js/views/dialogs/rights.html',
+                            parent: angular.element(document.body),
+                            targetEvent: originatorEv,
+                            clickOutsideToClose:true,
+                            fullscreen: false
+                        }
+                    );
+                    originatorEv = null;
+                }
+                $rootScope.$broadcast('closeContext');
+                $event.stopPropagation();
+            },
+            'confirm':function($event){
+
+                if($rootScope.selected['parent']){
+                    $rootScope.startLoadingAnimation();
+                    $mdDialog.cancel();
+                    gdisk.folder.setpermissions($rootScope.selected['id'], $rootScope.selected.permissions);
+                }
+
+                $event.stopPropagation();
+            }
+        };
+
+        /**
+         * When permissions loaded
+         */
+        $rootScope.$on('permission_loaded', function(event, data){
+
+            $rootScope.added = [];
+
+            $rootScope['selected']['permissions'] = data['items'];
+
+            var res = $filter('filter')(data['items'], {'type':"anyone"});
+            if(res){
+                $rootScope['selected']['is_permission_by_link'] = res.length>0?true:false;
+                if(res.length>0){
+                    $rootScope['selected']['permission_by_link'] = res[0];
+                }else{
+                    $rootScope['selected']['permission_by_link'] = {
+                        id: "anyoneWithLink",
+                        role: "reader",
+                        type: "anyone"
+                    };
+                }
+            }
+
+            res = $filter('filter')(data['items'], {'type':"user"});
+            if(res){
+                $rootScope['selected']['is_permission_by_users'] = true;
+                $rootScope['selected']['permission_by_users'] = res;
+            }
+        });
+
+        $rootScope.$watch('selected.is_permission_by_link',function(){
+            if($rootScope.is_permission_by_link){
+                $rootScope.willAddPermissions = [];
+            }
+        });
+
 
     }]);
 

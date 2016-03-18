@@ -1,0 +1,82 @@
+<md-dialog aria-label="" style="width:40%;">
+    <form>
+
+        <md-toolbar >
+            <div class="md-toolbar-tools">
+                <h1>Delning</h1>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="close()">
+                    <md-icon aria-label="Close dialog">close</md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+
+        <md-dialog-content>
+
+            <!-- permissions by link -->
+            <md-switch class="md-primary" md-no-ink aria-label="Switch No Ink" ng-model="$parent.selected.is_permission_by_link" >
+                Доступ по ссылке
+            </md-switch>
+            <div class="md-block" ng-if="$parent.selected.is_permission_by_link">
+
+                <table style="width:100%;">
+                    <tr>
+                        <td style="width: 300px;">
+                            <input  ng-model="$root.selected.link">
+                        </td>
+                        <td>
+                            <md-select ng-model="$root.selected.permission_by_link.role">
+                                <md-option ng-repeat="p in $root.permissionsList" value="{{p}}">{{p}}</md-option>
+                            </md-select>
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+
+            <!-- permissions by user -->
+            <div class="md-block" ng-if="$parent.selected.is_permission_by_users">
+                <table style="width:100%;">
+                    <tr ng-repeat="(i,u) in $root.selected.permissions|filter:'user'">
+                        <td style="width:50px;">
+                            <img width="35" ng-if="u.photoLink" ng-src="{{u.photoLink}}" />
+                            <i ng-if="!u.photoLink" style="font-size:35pt;" class="material-icons">mail_outline</i>
+                        </td>
+                        <td style="width:250px;">
+                            <span>{{u.emailAddress}}</span><br/>
+                            <span>{{u.name}}</span>
+                        </td>
+                        <td>
+                            <md-select ng-model="$root.selected.permissions[i].role" ng-if="u.role!='owner'">
+                                <md-option ng-repeat="p in $root.permissionsList" value="{{p}}">{{p}}</md-option>
+                            </md-select>
+                            <strong ng-if="u.role=='owner'">Owner</strong>
+                        </td>
+                        <td>
+                            <i ng-if="u.role!='owner'" class="material-icons">remove_circle_outline</i>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- add new users -->
+            <div class="md-block">
+                <h2 class="md-title">Invite new.</h2>
+                <md-chips ng-model="$root.added" name="fruitName" readonly="false" md-max-chips="5">
+                    <md-chip-template>
+                        <strong>{{$chip}}</strong>
+                        <em>(fruit)</em>
+                    </md-chip-template>
+                </md-chips>
+            </div>
+
+
+            <md-dialog-actions layout="row" >
+                <span flex></span>
+                <md-button md-autofocus ng-click="rights.confirm($event)">Save</md-button>
+            </md-dialog-actions>
+
+        </md-dialog-content>
+
+    </form>
+</md-dialog>

@@ -49,6 +49,18 @@ mainApp.controller('FilesController', ['$scope', '$rootScope', 'gdisk', 'GAPI', 
             });
 
             /**
+             * permission updated
+             */
+            $rootScope.$on('permission_updated', function(){
+                var toast = $mdToast.simple()
+                    .content('Permission updated.')
+                    .position('bottom right');
+
+                $mdToast.show(toast);
+                $scope.stopLoadingAnimation();
+            });
+
+            /**
              * When api loaded
              */
             $rootScope.$on('api_loaded', function(){

@@ -63,13 +63,13 @@
     <!-- Navigation -->
     <nav class="mdl-navigation" ng-if="selected">
         <button class="mdl-button mdl-js-button mdl-button--icon" data-upgraded=",MaterialButton">
-            <i class="material-icons" ng-click="link.open()">link</i>
+            <i class="material-icons" ng-click="link.open($event)">link</i>
         </button>
         <button class="mdl-button mdl-js-button mdl-button--icon" data-upgraded=",MaterialButton">
-            <i class="material-icons">person_add</i>
+            <i class="material-icons" ng-click="rights.open($event)">person_add</i>
         </button>
         <button class="mdl-button mdl-js-button mdl-button--icon" data-upgraded=",MaterialButton">
-            <i class="material-icons" ng-click="delete()">delete</i>
+            <i class="material-icons" ng-click="delete($event)">delete</i>
         </button>
 
         <md-menu>
@@ -88,6 +88,7 @@
 
     <div class="vertical-separator"></div>
 
+    <!-- Logout -->
     <button class="mdl-button mdl-js-button mdl-button--icon" data-upgraded=",MaterialButton">
         <i class="material-icons">info_outline</i>
     </button>

@@ -29,6 +29,11 @@ mainApp.controller('MainController', ['$scope', '$rootScope', '$http', '$routePa
 
         $rootScope.selectedItem = {};
 
+        $rootScope.permissionsList = [
+            "writer",
+            "reader"
+        ];
+
         /**
          * Show loading animation
          */
