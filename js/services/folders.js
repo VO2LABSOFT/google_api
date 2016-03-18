@@ -225,13 +225,6 @@ mainApp.service('gdisk', ['Drive', '$rootScope', '$filter', function(Drive, $roo
             return false;
         },
 
-        /**
-         * Load permissions for folder
-         * @param folderId
-         */
-        'getpermissions':function(folderId){
-            Drive.listPermissions(folderId).then(function(resp){ $rootScope.$broadcast('permission_loaded', resp); });
-        },
 
         'setpermissions':function(folderId, permisssions){
 
@@ -392,6 +385,65 @@ mainApp.service('gdisk', ['Drive', '$rootScope', '$filter', function(Drive, $roo
          * Quota info
          */
         'data':{}
+    };
+
+    /**
+     * Load permissions for file/folder
+     * @type {{load: Function}}
+     */
+    this.permissions = {
+        'load':function(id){
+            Drive.listPermissions(id).then(function(resp){ $rootScope.$broadcast('permission_loaded', resp); });
+        },
+        'list':[],
+        'invites':[],
+        'removes':[],
+        'file':'',
+        'shared':'',
+        'update':function(){
+
+            var file = mObj.permissions.file;
+            var len = mObj.permissions.list.length;
+            var share = false;
+
+            // update existed permissions
+            angular.forEach(mObj.permissions.list, function(value,key){
+                if(value['type']=="anyone") share = value;
+                Drive.patchPermissions(file, value['id'], value).then(function(res){
+                    if(key+1 == len){
+                        $rootScope.$broadcast('permission_updated');
+                    }
+                });
+            });
+
+            // send invites
+            if(mObj.permissions.invites.length > 0){
+                Drive.insertPermissions(file,{
+                    'role':'reader',
+                    'type':'user',
+                    'value':mObj.permissions.invites
+                });
+            }
+
+            // remove permissions
+            angular.forEach(mObj.permissions.removes, function(value,key){
+                Drive.deletePermissions(file,value['id']);
+            });
+
+            // add share by link if not
+            if(!share && mObj.permissions.share){ // create permission by link
+                Drive.insertPermissions(file,{
+                    'role':'reader',
+                    'value':'anyoneWithLink',
+                    'type':'anyone'
+                });
+            }
+            // remove share by link
+            if(share && !mObj.permissions.share){
+                Drive.deletePermissions(file,share['id']);
+            }
+
+        }
     };
 
     /**

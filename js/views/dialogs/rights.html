@@ -1,4 +1,4 @@
-<md-dialog aria-label="" style="width:40%;">
+<md-dialog aria-label="" style="max-height: 100%; max-width: 40%;">
     <form>
 
         <md-toolbar >
@@ -14,7 +14,7 @@
         <md-dialog-content>
 
             <!-- permissions by link -->
-            <md-switch class="md-primary" md-no-ink aria-label="Switch No Ink" ng-model="$parent.selected.is_permission_by_link" >
+            <md-switch class="md-primary" md-no-ink aria-label="Switch No Ink" ng-change="permissions.share()" ng-model="$parent.selected.is_permission_by_link" >
                 Доступ по ссылке
             </md-switch>
             <div class="md-block" ng-if="$parent.selected.is_permission_by_link">
@@ -37,7 +37,7 @@
             <!-- permissions by user -->
             <div class="md-block" ng-if="$parent.selected.is_permission_by_users">
                 <table style="width:100%;">
-                    <tr ng-repeat="(i,u) in $root.selected.permissions|filter:'user'">
+                    <tr ng-repeat="(i,u) in $root.selected.permissions|filter:'user'" ng-class="{'hidden' : u.deleted}">
                         <td style="width:50px;">
                             <img width="35" ng-if="u.photoLink" ng-src="{{u.photoLink}}" />
                             <i ng-if="!u.photoLink" style="font-size:35pt;" class="material-icons">mail_outline</i>
@@ -52,8 +52,8 @@
                             </md-select>
                             <strong ng-if="u.role=='owner'">Owner</strong>
                         </td>
-                        <td>
-                            <i ng-if="u.role!='owner'" class="material-icons">remove_circle_outline</i>
+                        <td style="width:50px;">
+                            <i ng-if="u.role!='owner'" ng-click="permissions.remove(u)" class="material-icons">remove_circle_outline</i>
                         </td>
                     </tr>
                 </table>
@@ -62,18 +62,18 @@
             <!-- add new users -->
             <div class="md-block">
                 <h2 class="md-title">Invite new.</h2>
-                <md-chips ng-model="$root.added" name="fruitName" readonly="false" md-max-chips="5">
+                <md-chips ng-model="$root._toInvite" md-on-append="permissions.invite($chip)" name="email" readonly="false">
                     <md-chip-template>
                         <strong>{{$chip}}</strong>
-                        <em>(fruit)</em>
                     </md-chip-template>
+                    <md-icon ng-click="permissions.remove_invite($chip)" md-chip-remove >close</md-icon>
                 </md-chips>
             </div>
 
 
             <md-dialog-actions layout="row" >
                 <span flex></span>
-                <md-button md-autofocus ng-click="rights.confirm($event)">Save</md-button>
+                <md-button md-autofocus ng-click="permissions.confirm($event)">Save</md-button>
             </md-dialog-actions>
 
         </md-dialog-content>

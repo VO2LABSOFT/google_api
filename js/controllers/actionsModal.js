@@ -148,16 +148,9 @@ mainApp.controller('ActionsModalController', ['$scope', '$filter', '$rootScope',
          * Access managment
          * @type {{}}
          */
-        $scope.rights = {
+        $scope.permissions = {
             'open':function($event){
                 if($rootScope.selected){
-
-                    if($rootScope.selected['parent']){
-                        gdisk.folder.getpermissions($rootScope.selected['id']);
-                    }
-                    if($rootScope.selected['folder']){
-
-                    }
 
                     originatorEv = $event;
                     $mdDialog.show(
@@ -170,7 +163,15 @@ mainApp.controller('ActionsModalController', ['$scope', '$filter', '$rootScope',
                             fullscreen: false
                         }
                     );
+
+                    gdisk.permissions.load($rootScope.selected['id']);
                     originatorEv = null;
+                    $rootScope._toInvite = [];
+
+                    gdisk.permissions.list = [];
+                    gdisk.permissions.invites = [];
+                    gdisk.permissions.removes = [];
+
                 }
                 $rootScope.$broadcast('closeContext');
                 $event.stopPropagation();
@@ -180,10 +181,28 @@ mainApp.controller('ActionsModalController', ['$scope', '$filter', '$rootScope',
                 if($rootScope.selected['parent']){
                     $rootScope.startLoadingAnimation();
                     $mdDialog.cancel();
-                    gdisk.folder.setpermissions($rootScope.selected['id'], $rootScope.selected.permissions);
+                    gdisk.permissions.list = $rootScope.selected.permissions;
+                    gdisk.permissions.file = $rootScope.selected['id'];
+                    gdisk.permissions.update();
                 }
 
                 $event.stopPropagation();
+            },
+            'invite':function($chip){
+                gdisk.permissions.invites.push($chip);
+                return $chip;
+            },
+            'remove_invite':function($chip,$index){
+                var c = gdisk.permissions.invites.indexOf($chip);
+                delete gdisk.permissions.invites[c];
+                gdisk.permissions.invites.length--;
+            },
+            'remove':function(permission){
+                permission['deleted'] = true;
+                gdisk.permissions.removes.push(permission);
+            },
+            'share':function(){
+                gdisk.permissions.share = $rootScope.selected.is_permission_by_link;
             }
         };
 
@@ -192,9 +211,8 @@ mainApp.controller('ActionsModalController', ['$scope', '$filter', '$rootScope',
          */
         $rootScope.$on('permission_loaded', function(event, data){
 
-            $rootScope.added = [];
-
             $rootScope['selected']['permissions'] = data['items'];
+            gdisk.permissions.list = data['items'];
 
             var res = $filter('filter')(data['items'], {'type':"anyone"});
             if(res){
@@ -217,9 +235,9 @@ mainApp.controller('ActionsModalController', ['$scope', '$filter', '$rootScope',
             }
         });
 
-        $rootScope.$watch('selected.is_permission_by_link',function(){
+        $rootScope.$watch('is_permission_by_link',function(){
             if($rootScope.is_permission_by_link){
-                $rootScope.willAddPermissions = [];
+                console.log('access by link');
             }
         });
 
