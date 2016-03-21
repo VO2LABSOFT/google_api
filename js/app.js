@@ -22,6 +22,13 @@ mainApp.config(['$routeProvider',
                 controllerAs: "mainApp"
             });
 
+        $routeProvider.
+            when('/login', {
+                templateUrl: 'js/views/login.html',
+                controller: 'MainController',
+                controllerAs: "mainApp"
+            });
+
     }]);
 
 

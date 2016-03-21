@@ -4,8 +4,8 @@
  * Files Controller.
  * Render files/folder.
  */
-mainApp.controller('FilesController', ['$scope', '$rootScope', 'gdisk', 'GAPI', '$mdDialog', '$mdToast',
-        function($scope,$rootScope, gdisk, GAPI, $mdDialog, $mdToast) {
+mainApp.controller('FilesController', ['GoogleApp', '$scope', '$rootScope', 'gdisk', 'GAPI', '$mdDialog', '$mdToast',
+        function(GoogleApp, $scope,$rootScope, gdisk, GAPI, $mdDialog, $mdToast) {
 
             this.name = 'FilesController';
 
@@ -100,13 +100,27 @@ mainApp.controller('FilesController', ['$scope', '$rootScope', 'gdisk', 'GAPI', 
             if($scope.folder.fid == 'trash') $scope.order = '-_updateDate';
             else $scope.order = 'name';
 
-            /**
-             * Load files from api and render
-             */
-            GAPI.init().then(function(){
-                $scope.startLoadingAnimation();
-                gdisk.load();
-                gdisk.accountinfo.load();
+            var onAuth = function (response) {
+                if(response.error) window.location = '/#/login';
+                else{
+                    /**
+                     * Load files from api and render
+                     */
+                    GAPI.init().then(function(){
+                        $scope.startLoadingAnimation();
+                        gdisk.load();
+                        gdisk.accountinfo.load();
+                    });
+                }
+            };
+
+            gapi.load('auth2', function() {
+                gapi.auth.authorize({
+                        client_id: GoogleApp.clientId,
+                        scope: GoogleApp.scopes,
+                        "immediate": true
+                    }, onAuth
+                );
             });
 
             $scope.sortName = function(){

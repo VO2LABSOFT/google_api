@@ -4,8 +4,8 @@
  * Actions Controller.
  * Realize actions for files/folders, navigations.
  */
-mainApp.controller('ActionsController', ['GAPI', '$scope', '$rootScope', 'gdisk', '$mdDialog', '$mdToast', 'Drive',
-        function(GAPI, $scope, $rootScope, gdisk, $mdDialog, $mdToast, Drive) {
+mainApp.controller('ActionsController', ['GoogleApp', 'GAPI', '$scope', '$rootScope', 'gdisk', '$mdDialog', '$mdToast', 'Drive',
+        function(GoogleApp, GAPI, $scope, $rootScope, gdisk, $mdDialog, $mdToast, Drive) {
 
             this.name = 'ActionsController';
 
@@ -55,11 +55,33 @@ mainApp.controller('ActionsController', ['GAPI', '$scope', '$rootScope', 'gdisk'
 
             $scope.logout = function(){
 
-                var auth2 = gapi.auth2.getAuthInstance();
-                auth2.signOut().then(function () {
-                    console.log('User signed out.');
-                });
+                gapi.auth.signOut();
+
+                window.location = "/#/login";
+
+                //var auth2 = gapi.auth2.getAuthInstance();
+                //auth2.signOut().then(function () {});
+
             };
-            
+
+            $scope.auth = function($event){
+
+                $event.preventDefault();
+                var onAuth = function (response) {
+                    if(response.error) window.location = '/#/login';
+                    else{
+                        window.location = '/#/';
+                    }
+                };
+                gapi.load('auth2', function() {
+                    gapi.auth.authorize({
+                            client_id: GoogleApp.clientId,
+                            scope: GoogleApp.scopes,
+                            "immediate": false
+                        }, onAuth
+                    );
+                });
+                return false;
+            };
 
         }]);
