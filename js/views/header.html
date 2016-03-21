@@ -16,7 +16,7 @@
             </md-menu-item>
             <md-menu-divider></md-menu-divider>
             <md-menu-item>
-                <md-button ng-click="ctrl.redial($event)"><md-icon md-menu-align-target>file_upload</md-icon>Ladda upp filer</md-button>
+                <md-button ng-click="upload.open($event)"><md-icon md-menu-align-target>file_upload</md-icon>Ladda upp filer</md-button>
             </md-menu-item>
             <md-menu-item>
                 <md-button ng-click="ctrl.redial($event)"><md-icon md-menu-align-target>file_upload</md-icon>Hämtningsmapp</md-button>
@@ -43,7 +43,7 @@
                 </md-menu-item>
                 <md-menu-divider></md-menu-divider>
                 <md-menu-item>
-                    <md-button ng-click="ctrl.redial($event)"><md-icon md-menu-align-target>file_upload</md-icon>Ladda upp filer</md-button>
+                    <md-button ng-click="upload.open($event)"><md-icon md-menu-align-target>file_upload</md-icon>Ladda upp filer</md-button>
                 </md-menu-item>
                 <md-menu-item>
                     <md-button ng-click="ctrl.redial($event)"><md-icon md-menu-align-target>file_upload</md-icon>Hämtningsmapp</md-button>
@@ -90,7 +90,7 @@
 
     <!-- Logout -->
     <button class="mdl-button mdl-js-button mdl-button--icon" data-upgraded=",MaterialButton">
-        <i class="material-icons">info_outline</i>
+        <i class="material-icons" ng-click="logout()">info_outline</i>
     </button>
 
 </div>

@@ -294,11 +294,12 @@ mainApp.service('gdisk', ['Drive', '$rootScope', '$filter', function(Drive, $roo
             if(file['id'] && file['folder']){
 
                 Drive.trashFile(file['id']).then(function(){
-                    angular.forEach(file, function(value, key){
+                    angular.forEach(files, function(value, key){
                         if(value['id']==file['id']){
+                            var folder = value['folder'];
                             delete files[key];
                             $rootScope.$broadcast('item_deleted', folder);
-                            $rootScope.$broadcast('update_folders_files_list', folder.parent);
+                            $rootScope.$broadcast('update_folders_files_list', folder);
                             return true;
                         }
                     });
@@ -319,6 +320,182 @@ mainApp.service('gdisk', ['Drive', '$rootScope', '$filter', function(Drive, $roo
                 file['name'] = res['title'];
                 $rootScope.$broadcast('update_folders_files_list', file.folder);
             });
+        },
+
+        /**
+         * Upload new file
+         */
+        'upload':function(file,parent){
+
+             var r = new FileReader();
+
+             r.onloadend = function(e){
+
+                 var params = {
+                     'title': file.name,
+                     'mimeType': file.type,
+                     'uploadType':'multipart'
+                 };
+
+                 const boundary = '-------314159265358979323846';
+                 const delimiter = "\r\n--" + boundary + "\r\n";
+                 const close_delim = "\r\n--" + boundary + "--";
+
+                 var base64Data = btoa(e.target.result);
+                 var multipartRequestBody =
+                     delimiter +
+                     'Content-Type: application/json\r\n\r\n' +
+                     JSON.stringify(params) +
+                     delimiter +
+                     'Content-Type: ' + file.type + '\r\n' +
+                     'Content-Transfer-Encoding: base64\r\n' +
+                     '\r\n' +
+                     base64Data +
+                     close_delim;
+
+                 var request = gapi.client.request({
+                     'path': '/upload/drive/v2/files/',
+                     'method': 'POST',
+                     'params': {'uploadType': 'multipart'},
+                     'headers': {
+                         'Content-Type': 'multipart/mixed; boundary="' + boundary + '"'
+                     },
+                     'body': multipartRequestBody});
+                 if (!callback) {
+                     var callback = function(file) {
+
+                         // Move file
+                         Drive.insertParents(file.id,{'id': parent}).then(function(){
+                             Drive.deleteParents(file.id, file.parents[0]['id']);
+                         });
+
+                         /**
+                          * PUSH FILE LOCALY
+                          */
+                         var item = {};
+
+                         var fileSize = file['fileSize'];
+
+                         if(file['fileSize']){
+
+                             if(fileSize > 1 && fileSize < 1000){ fileSize += 'B'; }
+                             if(fileSize > 1000 && fileSize < 1000000){ fileSize=fileSize/1000; fileSize = parseFloat(fileSize).toFixed(2); fileSize += 'Kb'; }
+                             if(fileSize > 1000000){fileSize=fileSize/1000000; fileSize = parseFloat(fileSize).toFixed(2); fileSize += 'Mb'; }
+
+                         }else{
+                             fileSize = '-';
+                         }
+
+                         item['id'] = file.id;
+                         item['name'] = file['title'];
+                         item['owner'] = file['ownerNames'].join(', ');
+                         item['updateDate'] = (new Date(file['modifiedDate'])).yyyymmdd();
+                         item['_updateDate'] = (new Date(file['modifiedDate'])).getTime();
+                         item['collapsed'] = true;
+                         item['folder'] = parent ;
+                         item['isfile'] = true;
+                         item['size'] = fileSize;
+                         item['iconLink'] = file['iconLink'];
+                         item['selected'] = false;
+                         item['link'] = file['alternateLink'];
+                         item['version'] = file['version'];
+
+                         if(file['webContentLink']){
+                             item['downloadlink'] = file.webContentLink;
+                         }
+                         if(file['exportLinks']){
+                             angular.forEach(file.exportLinks, function(l,key){ item['downloadlink'] = l; });
+                         }
+
+                         if(file['explicitlyTrashed']) item.folder = 'trash';
+                         if(!mObj.file.find(item['id']))files.push(item);
+                         console.log(file['parents'], mObj.file.find(item['id']));
+
+                         $rootScope.$broadcast('file_uploaded', parent);
+                         $rootScope.$broadcast('update_folders_files_list', parent);
+
+                     };
+                 }
+                 request.execute(callback);
+
+             };
+             r.readAsBinaryString(file);
+
+        },
+
+        /**
+         * Copy file
+         * @param fileId
+         */
+        'copy':function(file){
+
+            var request = gapi.client.request(
+                {
+                    'path': '/drive/v2/files/'+file.id+'/copy',
+                    'method': 'POST',
+                    'params': {}
+                }
+            );
+
+            request.execute(function(resp) {
+
+                var file = mObj.file._create(resp);
+
+                if(!mObj.file.find(file['id'])){
+                    console.log("Add!",file);
+                    files.push(file);
+                }
+
+                $rootScope.$broadcast('file_copied', file);
+                $rootScope.$broadcast('update_folders_files_list', file.folder);
+            });
+
+        },
+
+        /**
+         * Return file in needed format from api response
+         * @param apiitem
+         */
+        '_create' : function(apiitem){
+
+            var item = {};
+
+            var fileSize = apiitem['fileSize'];
+
+            if(apiitem['fileSize']){
+
+                if(fileSize > 1 && fileSize < 1000){ fileSize += 'B'; }
+                if(fileSize > 1000 && fileSize < 1000000){ fileSize=fileSize/1000; fileSize = parseFloat(fileSize).toFixed(2); fileSize += 'Kb'; }
+                if(fileSize > 1000000){fileSize=fileSize/1000000; fileSize = parseFloat(fileSize).toFixed(2); fileSize += 'Mb'; }
+
+            }else{
+                fileSize = '-';
+            }
+
+            item['id'] = apiitem.id;
+            item['name'] = apiitem['title'];
+            item['owner'] = apiitem['ownerNames'].join(', ');
+            item['updateDate'] = (new Date(apiitem['modifiedDate'])).yyyymmdd();
+            item['_updateDate'] = (new Date(apiitem['modifiedDate'])).getTime();
+            item['collapsed'] = true;
+            item['folder'] = apiitem.parents[0]['isRoot'] ? 'root' : apiitem.parents[0]['id'];
+            item['isfile'] = true;
+            item['size'] = fileSize;
+            item['iconLink'] = apiitem['iconLink'];
+            item['selected'] = false;
+            item['link'] = apiitem['alternateLink'];
+            item['version'] = apiitem['version'];
+
+            if(apiitem['webContentLink']){
+                item['downloadlink'] = apiitem.webContentLink;
+            }
+            if(apiitem['exportLinks']){
+                angular.forEach(apiitem.exportLinks, function(l,key){ item['downloadlink'] = l; });
+            }
+
+            if(apiitem['explicitlyTrashed']) item.folder = 'trash';
+
+            return item;
         }
 
     };
@@ -468,6 +645,7 @@ mainApp.service('gdisk', ['Drive', '$rootScope', '$filter', function(Drive, $roo
         Drive.listFiles({'maxResults':2000}).then(function(resp){
             var data = resp.items;
             for(var i in data) {
+
                 var item = {};
 
                 var fileSize = data[i]['fileSize'];
@@ -530,7 +708,6 @@ mainApp.service('gdisk', ['Drive', '$rootScope', '$filter', function(Drive, $roo
             $rootScope.$broadcast('api_loaded');
         });
     };
-
 
 
     /// DEPRICATED!

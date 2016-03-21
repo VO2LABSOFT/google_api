@@ -21,6 +21,15 @@ mainApp.controller('FilesController', ['$scope', '$rootScope', 'gdisk', 'GAPI', 
                 $scope.stopLoadingAnimation();
             });
 
+            $rootScope.$on('file_copied', function(event, data){
+                var toast = $mdToast.simple()
+                    .content('File '+data.name+' copied.')
+                    .position('bottom right');
+
+                $mdToast.show(toast);
+                $scope.stopLoadingAnimation();
+            });
+
             /**
              * On folder deleted
              */
@@ -36,8 +45,8 @@ mainApp.controller('FilesController', ['$scope', '$rootScope', 'gdisk', 'GAPI', 
              * Refresh list
              */
             $rootScope.$on('update_folders_files_list', function(event, folderId){
-                $rootScope.folders = gdisk.folder.childs(folderId); // set loaded folders
-                $rootScope.files = gdisk.file.childs(folderId); // set loaded files
+                $rootScope.folders = gdisk.folder.childs($rootScope.folder.fid); // set loaded folders
+                $rootScope.files = gdisk.file.childs($rootScope.folder.fid); // set loaded files
                 // tree
                 var tr = gdisk.folder.roots();
                 if(!angular.equals($rootScope.tree, tr)){

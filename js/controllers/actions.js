@@ -4,8 +4,8 @@
  * Actions Controller.
  * Realize actions for files/folders, navigations.
  */
-mainApp.controller('ActionsController', ['$scope', '$rootScope', 'gdisk', '$mdDialog', '$mdToast', 'Drive',
-        function($scope, $rootScope, gdisk, $mdDialog, $mdToast, Drive) {
+mainApp.controller('ActionsController', ['GAPI', '$scope', '$rootScope', 'gdisk', '$mdDialog', '$mdToast', 'Drive',
+        function(GAPI, $scope, $rootScope, gdisk, $mdDialog, $mdToast, Drive) {
 
             this.name = 'ActionsController';
 
@@ -52,5 +52,14 @@ mainApp.controller('ActionsController', ['$scope', '$rootScope', 'gdisk', '$mdDi
                 $rootScope.$broadcast('update_folders_files_list', item['parent'] ? item['parent'] : item['folder']);
                 $rootScope.$broadcast('closeContext');
             };
+
+            $scope.logout = function(){
+
+                var auth2 = gapi.auth2.getAuthInstance();
+                auth2.signOut().then(function () {
+                    console.log('User signed out.');
+                });
+            };
+            
 
         }]);

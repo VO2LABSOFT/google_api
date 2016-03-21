@@ -141,6 +141,10 @@ mainApp.controller('ActionsModalController', ['$scope', '$filter', '$rootScope',
 
                 //});
 
+            },
+            'copy':function(file){
+                $scope.startLoadingAnimation();
+                gdisk.file.copy(file);
             }
         };
 
@@ -207,6 +211,69 @@ mainApp.controller('ActionsModalController', ['$scope', '$filter', '$rootScope',
         };
 
         /**
+         * New folder from context menu
+         * @type {{open: Function, confirm: Function}}
+         */
+        $scope.create = {
+
+            'folder': false,
+
+            'open' : function(){
+
+                $rootScope.parentForCreate = $rootScope.selected;
+
+                $mdDialog.show(
+                    {
+                        controller: 'ActionsModalController',
+                        templateUrl: '/js/views/dialogs/newfolder.html',
+                        parent: angular.element(document.body),
+                        targetEvent: originatorEv,
+                        clickOutsideToClose:true,
+                        fullscreen: false
+                    }
+                );
+            },
+
+            'confirm':function(){
+                $mdDialog.cancel(); // close modal
+                $rootScope.loaded = false;
+                //console.log($rootScope.parentForCreate);
+                gdisk.folder.create($rootScope.newfoldername, $rootScope.parentForCreate.id);
+            }
+        };
+
+
+        $scope.upload = {
+
+            /**
+             * Modal window for upload file
+             */
+            'open' : function(){
+                $mdDialog.show(
+                    {
+                        controller: 'ActionsModalController',
+                        templateUrl: '/js/views/dialogs/upload.html',
+                        parent: angular.element(document.body),
+                        targetEvent: originatorEv,
+                        clickOutsideToClose:true,
+                        fullscreen: false
+                    }
+                );
+                $rootScope.uploaded = true;
+                originatorEv = null;
+            },
+
+            'upload' : function($event){
+
+                var f = document.getElementById('file').files[0];
+                $rootScope.uploaded = false;
+                gdisk.file.upload(f,$rootScope.folder.fid);
+
+            }
+
+        };
+
+        /**
          * When permissions loaded
          */
         $rootScope.$on('permission_loaded', function(event, data){
@@ -241,6 +308,17 @@ mainApp.controller('ActionsModalController', ['$scope', '$filter', '$rootScope',
             }
         });
 
+        $rootScope.$on('file_uploaded', function(event, data){
+
+            $mdDialog.cancel();
+            $rootScope.uploaded = true;
+
+            var toast = $mdToast.simple()
+                .content('File uploaded.')
+                .position('bottom right');
+            $mdToast.show(toast);
+
+        });
 
     }]);
 
@@ -287,5 +365,6 @@ mainApp.controller('FolderModalController', ['$scope', '$rootScope', 'gdisk', '$
             $rootScope.loaded = false;
             gdisk.folder.create($scope.name, $rootScope.folder.fid);
         };
+
 
     }]);
