@@ -105,7 +105,7 @@
             <md-menu-content class="context" style="display: none;">
                 <md-menu-item><md-button ng-click="create.open($event)"><md-icon md-menu-align-target>create_new_folder</md-icon>New folder</md-button></md-menu-item>
                 <md-menu-item><md-button ng-click="link.open($event)"><md-icon md-menu-align-target>link</md-icon>Link</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="move.open($event)"><md-icon md-menu-align-target>move_to_inbox</md-icon>Move</md-button></md-menu-item>
+                <md-menu-item><md-button ng-click="move.open(folder,$event)"><md-icon md-menu-align-target>move_to_inbox</md-icon>Move</md-button></md-menu-item>
                 <md-menu-item><md-button ng-click="rename.open($event)"><md-icon md-menu-align-target>mode_edit</md-icon>Rename</md-button></md-menu-item>
                 <md-menu-item><md-button ng-click="delete($event)"><md-icon md-menu-align-target>delete</md-icon>Remove</md-button></md-menu-item>
             </md-menu-content>
@@ -131,7 +131,7 @@
             <md-menu-content class="context" style="display: none;">
                 <md-menu-item><md-button ng-click="link.open($event)"><md-icon md-menu-align-target>link</md-icon>Link</md-button></md-menu-item>
                 <md-menu-item><md-button ng-click="move.copy(file)"><md-icon md-menu-align-target>content_copy</md-icon>Copy</md-button></md-menu-item>
-                <md-menu-item><md-button ng-click="move.open($event)"><md-icon md-menu-align-target>move_to_inbox</md-icon>Move</md-button></md-menu-item>
+                <md-menu-item><md-button ng-click="move.open(file,$event)"><md-icon md-menu-align-target>move_to_inbox</md-icon>Move</md-button></md-menu-item>
                 <md-menu-item><md-button ng-click="rename.open($event)"><md-icon md-menu-align-target>mode_edit</md-icon>Rename</md-button></md-menu-item>
                 <md-menu-item><md-button ng-click="download($event)"><md-icon md-menu-align-target>file_download</md-icon>Download</md-button></md-menu-item>
                 <md-menu-item><md-button ng-click="delete($event)"><md-icon md-menu-align-target>delete</md-icon>Remove</md-button></md-menu-item>

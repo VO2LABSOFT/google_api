@@ -145,6 +145,7 @@ mainApp.service('gdisk', ['Drive', '$rootScope', '$filter', function(Drive, $roo
          */
         'childs' : function(parentId){
             var res = $filter('filter')(folders, {'parent':parentId});
+            res = $filter('orderBy')(res, 'name');
             if(res && res.length > 0) return res;
             else return false;
         },
@@ -709,21 +710,27 @@ mainApp.service('gdisk', ['Drive', '$rootScope', '$filter', function(Drive, $roo
         });
     };
 
-
-    /// DEPRICATED!
-
-
-    this.moveFile = function(id, oldparent, newparent){
-
-
-        Drive.insertParents(id,newparent).then(function(){
+    /**
+     * Move folder/file
+     * @param id
+     * @param oldparent
+     * @param newparent
+     */
+    this.move = function(id, oldparent, newparent){
+        Drive.insertParents(id,{'id': newparent}).then(function(){
             Drive.deleteParents(id, oldparent);
+
+            var f = mObj.folder.find(id);
+            if(f){
+                f['parent'] = newparent;
+            }else{
+                f = mObj.file.find(id);
+                if(f) f['folder'] = newparent;
+            }
+
+            $rootScope.$broadcast('moved');
+            $rootScope.$broadcast('update_folders_files_list', oldparent );
         });
-
-        //console.log(id,oldparent);
-        //return Drive.updateFiles(id, {removeParents: oldparent});
     };
-
-
 
 }]);

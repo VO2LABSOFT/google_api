@@ -84,7 +84,7 @@ mainApp.controller('ActionsModalController', ['$scope', '$filter', '$rootScope',
          * Show move modal
          */
         $scope.move = {
-            'open':function(folder){
+            'open':function(folder,$event){
 
                 $rootScope.folderToMoveTo = false;
                 $rootScope.folderToMove = folder;
@@ -103,6 +103,9 @@ mainApp.controller('ActionsModalController', ['$scope', '$filter', '$rootScope',
                 );
 
                 originatorEv = null;
+
+                $event.stopPropagation();
+                $rootScope.$broadcast('closeContext');
             },
             'confirm':function(){
 
@@ -340,7 +343,7 @@ mainApp.controller('FolderModalController', ['$scope', '$rootScope', 'gdisk', '$
          * open new modal window
          * @param $event
          */
-        $scope.open = function() {
+        $scope.open = function($event) {
 
             $mdDialog.show(
                 {
@@ -354,6 +357,8 @@ mainApp.controller('FolderModalController', ['$scope', '$rootScope', 'gdisk', '$
             );
 
             originatorEv = null;
+
+            $event.stopPropagation();
         };
 
         /**
@@ -366,5 +371,48 @@ mainApp.controller('FolderModalController', ['$scope', '$rootScope', 'gdisk', '$
             gdisk.folder.create($scope.name, $rootScope.folder.fid);
         };
 
+    }]);
+
+mainApp.controller('movetreeController', ['$scope', '$rootScope', 'gdisk', '$mdDialog',
+    function($scope, $rootScope, gdisk, $mdDialog) {
+
+        $scope.curFolder = 'root';
+        $scope.folders = $scope.folders = gdisk.folder.childs('root');
+        $scope.folder = {'id':'root','name':'My disk', 'parent':false};
+        $scope.targetFolder = '';
+
+        angular.forEach($scope.folders,function(value,key){
+            $scope.folders[key]['childs'] = gdisk.folder.childs(value['id']);
+        });
+
+        $scope.select = function(id,$event){
+            var tr = angular.element($event.target);
+
+            angular.element(tr).parent().parent().parent().find('span')
+                .css('font-weight','normal').css('text-decoration','none'); // drop all selection
+
+            angular.element(tr).css('font-weight','bold').css('text-decoration','underline'); // set selected
+            $scope.targetFolder = id;
+        };
+
+        $scope.goto = function(id){
+            $scope.folders = gdisk.folder.childs(id);
+            $scope.folder = gdisk.folder.find(id) ? gdisk.folder.find(id) : {'id':'root','name':'My disk', 'parent':false};
+
+        };
+
+        $scope.move = function(){
+
+            console.log($rootScope.selected);
+
+            if($rootScope.selected.parent)
+                gdisk.move($rootScope.selected['id'],$rootScope.selected.parent,$scope.targetFolder);
+            if($rootScope.selected.folder)
+                gdisk.move($rootScope.selected['id'],$rootScope.selected.folder,$scope.targetFolder);
+        };
+
+        $rootScope.$on('moved', function(){
+            $mdDialog.cancel();
+        });
 
     }]);

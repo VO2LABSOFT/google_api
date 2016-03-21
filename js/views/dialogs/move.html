@@ -1,4 +1,4 @@
-<md-dialog aria-label="" style="width:60%;">
+<md-dialog aria-label="" ng-controller="movetreeController">
     <form>
 
         <md-toolbar >
@@ -14,15 +14,27 @@
         <md-dialog-content>
             <md-input-container class="md-block">
 
-                <nav class="mdl-navigation" style="min-height: 200px; overflow-y: scroll; margin-top: 10px; max-height: 400px;">
-                    <ul folders-tree class="root" tree="{{$parent.tree}}" modal="true"></ul>
+                <table class="" style="width:100%;">
+                    <tr>
+                        <td style="width:20px;"><i class="material-icons" ng-if="folder.parent" ng-click="goto(folder.parent)">keyboard_arrow_left</i></td>
+                        <td align="left">{{folder.name}}</td>
+                    </tr>
+                </table>
+
+                <nav class="mdl-navigation">
+                    <table class="" style="width:100%;">
+                        <tr ng-repeat="folder in folders">
+                            <td><span style="outline: none; cursor: pointer;" ng-click="select(folder.id,$event)">{{folder.name}}</span></td>
+                            <td><i class="material-icons" ng-if="folder.childs" ng-click="goto(folder.id)">keyboard_arrow_right</i></td>
+                        </tr>
+                    </table>
                 </nav>
 
             </md-input-container>
 
             <md-dialog-actions layout="row" >
                 <span flex></span>
-                <md-button md-autofocus ng-click="confirmMove()">Move</md-button>
+                <md-button md-autofocus ng-click="move()">Move</md-button>
             </md-dialog-actions>
 
         </md-dialog-content>
