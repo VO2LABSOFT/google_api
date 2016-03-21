@@ -23,7 +23,7 @@ mainApp.controller('FilesController', ['GoogleApp', '$scope', '$rootScope', 'gdi
 
             $rootScope.$on('file_copied', function(event, data){
                 var toast = $mdToast.simple()
-                    .content('File '+data.name+' copied.')
+                    .content('Fil '+data.name+' kopieras.')
                     .position('bottom right');
 
                 $mdToast.show(toast);
@@ -35,7 +35,7 @@ mainApp.controller('FilesController', ['GoogleApp', '$scope', '$rootScope', 'gdi
              */
             $rootScope.$on('item_deleted', function(event, data){
                 var toast = $mdToast.simple()
-                    .content(data.name+' deleted.')
+                    .content(data.name+' utgår.')
                     .position('bottom right');
                 $mdToast.show(toast);
                 $scope.stopLoadingAnimation();
@@ -62,7 +62,7 @@ mainApp.controller('FilesController', ['GoogleApp', '$scope', '$rootScope', 'gdi
              */
             $rootScope.$on('permission_updated', function(){
                 var toast = $mdToast.simple()
-                    .content('Permission updated.')
+                    .content('Tillåtelse uppdateras.')
                     .position('bottom right');
 
                 $mdToast.show(toast);

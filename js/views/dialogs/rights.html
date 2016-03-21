@@ -15,7 +15,7 @@
 
             <!-- permissions by link -->
             <md-switch class="md-primary" md-no-ink aria-label="Switch No Ink" ng-change="permissions.share()" ng-model="$parent.selected.is_permission_by_link" >
-                Доступ по ссылке
+                Länk
             </md-switch>
             <div class="md-block" ng-if="$parent.selected.is_permission_by_link">
 
@@ -50,7 +50,7 @@
                             <md-select ng-model="$root.selected.permissions[i].role" ng-if="u.role!='owner'">
                                 <md-option ng-repeat="p in $root.permissionsList" value="{{p}}">{{p}}</md-option>
                             </md-select>
-                            <strong ng-if="u.role=='owner'">Owner</strong>
+                            <strong ng-if="u.role=='owner'">Ägare</strong>
                         </td>
                         <td style="width:50px;">
                             <i ng-if="u.role!='owner'" ng-click="permissions.remove(u)" class="material-icons">remove_circle_outline</i>
@@ -61,7 +61,7 @@
 
             <!-- add new users -->
             <div class="md-block">
-                <h2 class="md-title">Invite new.</h2>
+                <h2 class="md-title">Bjuda nya</h2>
                 <md-chips ng-model="$root._toInvite" md-on-append="permissions.invite($chip)" name="email" readonly="false">
                     <md-chip-template>
                         <strong>{{$chip}}</strong>
@@ -73,7 +73,7 @@
 
             <md-dialog-actions layout="row" >
                 <span flex></span>
-                <md-button md-autofocus ng-click="permissions.confirm($event)">Save</md-button>
+                <md-button md-autofocus ng-click="permissions.confirm($event)">Spara</md-button>
             </md-dialog-actions>
 
         </md-dialog-content>

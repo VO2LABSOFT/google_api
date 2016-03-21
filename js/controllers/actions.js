@@ -54,14 +54,8 @@ mainApp.controller('ActionsController', ['GoogleApp', 'GAPI', '$scope', '$rootSc
             };
 
             $scope.logout = function(){
-
                 gapi.auth.signOut();
-
                 window.location = "/#/login";
-
-                //var auth2 = gapi.auth2.getAuthInstance();
-                //auth2.signOut().then(function () {});
-
             };
 
             $scope.auth = function($event){

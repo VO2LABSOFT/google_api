@@ -317,7 +317,7 @@ mainApp.controller('ActionsModalController', ['$scope', '$filter', '$rootScope',
             $rootScope.uploaded = true;
 
             var toast = $mdToast.simple()
-                .content('File uploaded.')
+                .content('Fil laddas upp.')
                 .position('bottom right');
             $mdToast.show(toast);
 

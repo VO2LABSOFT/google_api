@@ -4,7 +4,7 @@
 
         <md-toolbar>
             <div class="md-toolbar-tools">
-                <h1>Upload</h1>
+                <h1>Ladda upp</h1>
                 <span flex></span>
                 <md-button class="md-icon-button" ng-click="close($event)">
                     <md-icon aria-label="Close dialog">close</md-icon>
@@ -17,13 +17,12 @@
                 <md-input-container class="md-block">
                     <label></label>
                     <input id="file" ng-model="$root.uploadfile" type="file">
-
                     <md-progress-linear md-mode="indeterminate" ng-class="{'hidden' : $root.uploaded}"></md-progress-linear><br/>
                 </md-input-container>
 
                 <md-dialog-actions layout="row" >
                     <span flex></span>
-                    <md-button md-autofocus ng-click="upload.upload($event)">Upload</md-button>
+                    <md-button md-autofocus ng-click="upload.upload($event)">Ladda upp</md-button>
                 </md-dialog-actions>
 
 
