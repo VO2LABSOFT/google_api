@@ -533,6 +533,12 @@ mainApp.service('gdisk', ['Drive', '$rootScope', '$filter', function(Drive, $roo
                     quotaBytesTotal = quotaBytesTotal.toFixed(2)+' Tb';
                 }
 
+                // display in Kb
+                if(quotaBytesUsed >1000 && quotaBytesUsed < 1000000){
+                    quotaBytesUsed = quotaBytesUsed/1000;
+                    quotaBytesUsed = quotaBytesUsed.toFixed(2)+' Kb';
+                }
+
                 // display in Mb
                 if(quotaBytesUsed >1000000 && quotaBytesUsed < 1000000000){
                     quotaBytesUsed = quotaBytesUsed/1000000;
@@ -636,6 +642,18 @@ mainApp.service('gdisk', ['Drive', '$rootScope', '$filter', function(Drive, $roo
             if(value['selected']) res = files[key];
         });
         return res;
+    };
+
+    /**
+     * Drop selection
+     */
+    this.dropSelect = function(){
+        angular.forEach(folders, function(value,key){
+            folders[key]['selected'] = false;
+        });
+        angular.forEach(files, function(value,key){
+            files[key]['selected'] = false;
+        });
     };
 
     /**

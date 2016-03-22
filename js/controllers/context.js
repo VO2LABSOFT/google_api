@@ -16,10 +16,12 @@ mainApp.controller('ContextController', ['$scope', '$rootScope', 'gdisk', '$mdDi
 
                 $scope.closeContext();
 
+                var selected = gdisk.selected();
+
                 if(!item.folder){
-                    gdisk.folder.select(item);
+                    if(selected['id'] != item['id']) gdisk.folder.select(item);
                 }else{
-                    gdisk.file.select(item);
+                    if(selected['id'] != item['id']) gdisk.file.select(item);
                 }
 
                 $(cmenu).css('display','block');
@@ -51,7 +53,6 @@ mainApp.controller('ContextController', ['$scope', '$rootScope', 'gdisk', '$mdDi
             $rootScope.$on('closeContext', function(){
                 $('.tablerow').find('md-menu-content').css('display','none');
             });
-
 
         }]
 );

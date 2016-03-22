@@ -240,7 +240,6 @@ mainApp.controller('ActionsModalController', ['$scope', '$filter', '$rootScope',
             'confirm':function(){
                 $mdDialog.cancel(); // close modal
                 $rootScope.loaded = false;
-                //console.log($rootScope.parentForCreate);
                 gdisk.folder.create($rootScope.newfoldername, $rootScope.parentForCreate.id);
             }
         };

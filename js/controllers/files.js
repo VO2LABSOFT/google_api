@@ -21,6 +21,9 @@ mainApp.controller('FilesController', ['GoogleApp', '$scope', '$rootScope', 'gdi
                 $scope.stopLoadingAnimation();
             });
 
+            /**
+             * On file copied
+             */
             $rootScope.$on('file_copied', function(event, data){
                 var toast = $mdToast.simple()
                     .content('Fil '+data.name+' kopieras.')

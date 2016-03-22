@@ -51,13 +51,22 @@ mainApp.controller('ActionsController', ['GoogleApp', 'GAPI', '$scope', '$rootSc
                 if(item['folder']) gdisk.file.select(item);
                 $rootScope.$broadcast('update_folders_files_list', item['parent'] ? item['parent'] : item['folder']);
                 $rootScope.$broadcast('closeContext');
+                $event.stopPropagation();
             };
 
+            /**
+             * Logout
+             */
             $scope.logout = function(){
                 gapi.auth.signOut();
                 window.location = "/#/login";
             };
 
+            /**
+             * Auth
+             * @param $event
+             * @returns {boolean}
+             */
             $scope.auth = function($event){
 
                 $event.preventDefault();
@@ -77,5 +86,16 @@ mainApp.controller('ActionsController', ['GoogleApp', 'GAPI', '$scope', '$rootSc
                 });
                 return false;
             };
+
+            /**
+             * Clicked anywhere
+             * @param $event
+             */
+            $scope.bodyClicked = function($event){
+                $rootScope.$broadcast('closeContext');
+                gdisk.dropSelect();
+                $rootScope.selected = false;
+                $rootScope.$broadcast('update_folders_files_list');
+            }
 
         }]);
